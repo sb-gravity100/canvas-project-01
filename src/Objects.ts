@@ -93,10 +93,10 @@ export class Circle {
          drawFunc.call(this, ctx);
       } else {
          ctx.save()
-         ctx.globalAlpha = this.alpha
          ctx.beginPath();
          ctx.arc(x, y, radius, 0, Math.PI * 2);
          ctx.closePath();
+         ctx.globalAlpha = this.alpha
          ctx.lineWidth = line;
          if (shadow) {
             ctx.shadowColor = shadow

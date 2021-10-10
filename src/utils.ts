@@ -4,12 +4,12 @@ import gsap from 'gsap'
 
 const { utils } = gsap
 
-export const snapToCanvas = utils.snap({ radius: 1, values: [0, canvas.width] })
+export const snapToCanvas = utils.mapRange(0, canvas.width, 0, canvas.width)
 
 export function randomHSL(h?: any, s?: any, l?: any, a?: any) {
-   let hue = h || Math.random() * 360
-   let sat = s || Math.random() * 100
-   let lum = l || Math.random() * 100;
+   let hue = typeof h === 'number' ? h : Math.random() * 360
+   let sat = typeof s === 'number' ? s : Math.random() * 100
+   let lum = typeof l === 'number' ? l : Math.random() * 100;
    let alpha = a || 1;
    return `hsla(${hue}, ${sat}%, ${lum}%, ${alpha})`
 }
@@ -72,3 +72,13 @@ export function randomInterval(callback: Function, max: number, min: number) {
 
 export const distributeAngle = (objectCount: number) => (Math.PI * 2) / objectCount;
 export const distributeColor = (objectCount: number) => 360 / objectCount;
+
+export function toRadians(deg: number) {
+   return deg * (Math.PI / 180)
+}
+
+export function callIfFunction<T>(f: T, ...args: T extends (...args: any[]) => any ? Parameters<T> : never) {
+   if (typeof f === 'function') {
+      f(...args)
+   }
+}
