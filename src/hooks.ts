@@ -10,16 +10,35 @@ type VoidHookMethods = Record<
 >;
 
 type Instance = InstanceType<new (...args: any) => any>
-
+type useHookOptions<T> = {
+   amount?: number
+   onStart: (c: T[]) => any
+   onStop?: (c: T[]) => any,
+   onUpdate?: (c: T, i: number) => any,
+   autoplay?: boolean
+}
 type ParticleHookReturn<T extends Instance> = [
    T[],
    VoidHookMethods
 ];
 
-export function useFireworks(interval: number, autoplay?: boolean): ParticleHookReturn<FireWorks> {
-   var fireworks: FireWorks[] = [];
-   let started = autoplay;
+type FireWorksOptions = useHookOptions<FireWorks> & {
+   interval?: number
+}
+
+type CircleOptions = useHookOptions<Circle> & {
+   interval?: number
+}
+
+export function useFireworks(opts: FireWorksOptions): ParticleHookReturn<FireWorks> {
+   let { onUpdate, onStop, onStart } = opts
+   let fireworks: FireWorks[] = [];
+   let started = false;
    let id: any;
+
+   if (opts.autoplay) {
+      start()
+   }
 
    function animate() {
       if (started) {
@@ -27,6 +46,7 @@ export function useFireworks(interval: number, autoplay?: boolean): ParticleHook
             if (e.isDone) {
                setTimeout(() => fireworks.splice(i, 1), 0);
             }
+            callIfFunction(onUpdate, e, i)
             e.update();
          });
       }
@@ -34,13 +54,15 @@ export function useFireworks(interval: number, autoplay?: boolean): ParticleHook
 
    function start() {
       started = true;
+      callIfFunction(onStart, fireworks)
       id = setInterval(() => {
          fireworks.push(new FireWorks());
-      }, interval);
+      }, opts.interval || 1000);
    }
 
    function stop() {
       started = false;
+      callIfFunction(onStop, fireworks)
       fireworks.splice(0, fireworks.length)
       clearInterval(id);
    }
@@ -55,15 +77,7 @@ export function useFireworks(interval: number, autoplay?: boolean): ParticleHook
 
    return [fireworks, { animate, start, stop, toggle }];
 }
-
-type useHookOptions<T> = {
-   amount?: number
-   onStart: (c: T[]) => any
-   onStop?: (c: T[]) => any,
-   onUpdate?: (c: T, i: number) => any,
-   autoplay?: boolean
-}
-export function useCircle(opts: useHookOptions<Circle>): ParticleHookReturn<Circle> {
+export function useCircle(opts: CircleOptions): ParticleHookReturn<Circle> {
    const circles: Circle[] = []
    let started = false;
 

@@ -12,18 +12,28 @@ type AnyRecord = {
    [p in string]: any;
 };
 
-export class Text {
+class DefaultClass {
    _id: string;
    extra: AnyRecord = {};
+   fill?= '#000';
+   stroke?: string;
+   shadow?: string;
+   shadowBlur = 15;
+   alpha = 1;
+
+   constructor() {
+      this._id = nanoid()
+   }
+}
+
+export class Text extends DefaultClass {
    x: number;
    y: number;
    text = '';
-   fill? = '#000';
-   stroke?: string;
    font = 'Arial 30px';
 
    constructor(x: number, y: number) {
-      this._id = nanoid();
+      super()
       this.x = x;
       this.y = y;
    }
@@ -32,9 +42,10 @@ export class Text {
       if (typeof drawFunc === 'function') {
          drawFunc.call(this, ctx);
       } else {
-         const { x, y, text, fill, stroke, font } = this;
+         const { x, y, text, fill, stroke, font, alpha } = this;
          ctx.save();
          ctx.font = font;
+         ctx.globalAlpha = alpha
          if (this.fill) {
             ctx.fillStyle = fill as string;
             ctx.fillText(text, x, y);
@@ -57,21 +68,15 @@ export class Text {
    }
 }
 
-export class Circle {
-   _id: string;
+export class Circle extends DefaultClass {
    extra: AnyRecord = {};
    x: number;
    y: number;
    radius: number;
-   fill? = '#000';
-   stroke?: string;
-   shadow?: string;
-   shadowBlur = 15;
    line = 1;
-   alpha = 1;
 
    constructor(x: number, y: number, radius: number) {
-      this._id = nanoid();
+      super()
       this.radius = radius;
       this.x = x;
       this.y = y;
@@ -87,7 +92,7 @@ export class Circle {
    }
 
    draw(drawFunc?: Maybe<DrawFunction<this>>) {
-      const { x, y, radius, fill, line, stroke, shadow, shadowBlur } = this;
+      const { x, y, radius, fill, line, stroke, shadow, shadowBlur, alpha } = this;
 
       if (drawFunc) {
          drawFunc.call(this, ctx);
@@ -96,7 +101,7 @@ export class Circle {
          ctx.beginPath();
          ctx.arc(x, y, radius, 0, Math.PI * 2);
          ctx.closePath();
-         ctx.globalAlpha = this.alpha
+         ctx.globalAlpha = alpha
          ctx.lineWidth = line;
          if (shadow) {
             ctx.shadowColor = shadow
@@ -239,5 +244,59 @@ export class FireWorks {
          }
 
          this.circle.update()
+   }
+}
+
+export class Line extends DefaultClass {
+   x: number;
+   y: number;
+   x2: number;
+   y2: number;
+   line = 1
+   
+   constructor(x: number, y: number, x2 = x, y2 = y) {
+      super()
+      this.x = x
+      this.y = y
+      this.x2 = x
+      this.y2 = y
+      this.stroke = '#000'
+   }
+
+   draw(drawFunc?: Maybe<DrawFunction<this>>) {
+      if (typeof drawFunc === 'function') {
+         drawFunc.call(this, ctx);
+      } else {
+         const { x, y, x2, y2, fill, stroke, shadowBlur, shadow, line, alpha } = this
+         ctx.save()
+         ctx.beginPath()
+         ctx.moveTo(x, y);
+         ctx.lineTo(x2, y2);
+         ctx.closePath()
+         ctx.globalAlpha = alpha
+         ctx.lineWidth = line;
+         if (shadow) {
+            ctx.shadowColor = shadow
+            ctx.shadowBlur = shadowBlur
+         }
+         if (fill) {
+            ctx.fillStyle = fill;
+            ctx.fill();
+         }
+         if (stroke) {
+            ctx.strokeStyle = stroke;
+            ctx.stroke();
+         }
+         ctx.restore()
+      }
+   }
+
+   update(...args: any[]): void;
+   update(
+      updateFunc?: Maybe<UpdateFunction<this, this>>,
+      drawFunc?: Maybe<DrawFunction<this>>
+   ) {
+      updateFunc?.call(this, this);
+      this.draw(drawFunc);
    }
 }
