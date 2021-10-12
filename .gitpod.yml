@@ -1,0 +1,5 @@
+tasks:
+   - name: Webpack
+     command: |
+        yarn
+        yarn run start

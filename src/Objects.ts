@@ -1,8 +1,13 @@
 import { ctx, friction, globalTs, gravity, canvas } from './context';
-import { distributeAngle, randomHSL, randomNumber, snapToCanvas } from './utils';
+import {
+   distributeAngle,
+   randomHSL,
+   randomNumber,
+   snapToCanvas,
+} from './utils';
 // import faker from 'faker'
 import _ from 'lodash';
-import gsap from 'gsap'
+import gsap from 'gsap';
 import { nanoid } from 'nanoid';
 
 type Maybe<T = any> = T | null | undefined;
@@ -97,15 +102,15 @@ export class Circle extends DefaultClass {
       if (drawFunc) {
          drawFunc.call(this, ctx);
       } else {
-         ctx.save()
+         ctx.save();
          ctx.beginPath();
          ctx.arc(x, y, radius, 0, Math.PI * 2);
          ctx.closePath();
          ctx.globalAlpha = alpha
          ctx.lineWidth = line;
          if (shadow) {
-            ctx.shadowColor = shadow
-            ctx.shadowBlur = shadowBlur
+            ctx.shadowColor = shadow;
+            ctx.shadowBlur = shadowBlur;
          }
          if (fill) {
             ctx.fillStyle = fill;
@@ -115,7 +120,7 @@ export class Circle extends DefaultClass {
             ctx.strokeStyle = stroke;
             ctx.stroke();
          }
-         ctx.restore()
+         ctx.restore();
       }
    }
 }
@@ -164,86 +169,106 @@ export class FireWorks {
    particlePow = 30;
    isKaboom = false;
    isDone = false;
-   kaboom: VoidFunction
+   kaboom: VoidFunction;
 
-   constructor(startX?: number, startY?: number, maxHeight?: number, maxNum?: number, lum?: number, sat?: number) {
-      let num = randomNumber(maxNum || 200, 50)
-      const angleInc = distributeAngle(num)
+   constructor(
+      startX?: number,
+      startY?: number,
+      maxHeight?: number,
+      maxNum?: number,
+      lum?: number,
+      sat?: number
+   ) {
+      let num = randomNumber(maxNum || 200, 50);
+      const angleInc = distributeAngle(num);
       this._id = nanoid();
 
       this.startX = startX || randomNumber(canvas.width, 0);
       this.startY = startY || canvas.height + 20;
-      this.circle = new Projectile(this.startX, this.startY, randomNumber(4, 1))
-      this.maxHeight = maxHeight || randomNumber(canvas.height * 0.75, 0)
+      this.circle = new Projectile(
+         this.startX,
+         this.startY,
+         randomNumber(4, 1)
+      );
+      this.maxHeight = maxHeight || randomNumber(canvas.height * 0.75, 0);
 
-      const snappedX = snapToCanvas(randomNumber(this.startX * 1.5, this.startX * 0.5))
-      console.log(snappedX)
-      const angle = Math.atan2(-this.circle.y, snappedX - this.circle.x)
-      this.circle.vX = Math.cos(angle)
-      this.circle.vY = Math.sin(angle)
-      this.circle.pow = randomNumber(600, 400)
+      const snappedX = snapToCanvas(
+         randomNumber(this.startX * 1.5, this.startX * 0.5)
+      );
+      console.log(snappedX);
+      const angle = Math.atan2(-this.circle.y, snappedX - this.circle.x);
+      this.circle.vX = Math.cos(angle);
+      this.circle.vY = Math.sin(angle);
+      this.circle.pow = randomNumber(600, 400);
 
-
-      this.lum = lum || 50
-      this.sat = sat || 50
+      this.lum = lum || 50;
+      this.sat = sat || 50;
       this.minFillHue = randomNumber(360);
       this.maxFillHue = randomNumber(360, this.minFillHue);
-      this.circle.fill = randomHSL(randomNumber(this.maxFillHue, this.minFillHue), this.sat, this.lum)
-      this.circle.shadow = this.circle.fill
-      this.circle.shadowBlur = 20
+      this.circle.fill = randomHSL(
+         randomNumber(this.maxFillHue, this.minFillHue),
+         this.sat,
+         this.lum
+      );
+      this.circle.shadow = this.circle.fill;
+      this.circle.shadowBlur = 20;
       this.kaboom = () => {
          for (let i = 0; i < num; ++i) {
-            const radius = randomNumber(3, 0.5)
-            const part = new Particle(this.circle.x, this.circle.y, radius)
-            part.vX = Math.cos(i * angleInc)
-            part.vY = Math.sin(i * angleInc)
-            part.pow = this.particlePow * radius
-            part.fill = randomHSL(randomNumber(this.maxFillHue, this.minFillHue), this.sat, this.lum)
-            part.shadow = part.fill
-            part.shadowBlur = 10
-            this.objects.push(part)
+            const radius = randomNumber(3, 0.5);
+            const part = new Particle(this.circle.x, this.circle.y, radius);
+            part.vX = Math.cos(i * angleInc);
+            part.vY = Math.sin(i * angleInc);
+            part.pow = this.particlePow * radius;
+            part.fill = randomHSL(
+               randomNumber(this.maxFillHue, this.minFillHue),
+               this.sat,
+               this.lum
+            );
+            part.shadow = part.fill;
+            part.shadowBlur = 10;
+            this.objects.push(part);
          }
-      }
+      };
    }
 
    updateParticles() {
       if (this.objects.length === 0) {
-         this.kaboom()
+         this.kaboom();
       }
-      this.objects.forEach(e => {
+      this.objects.forEach((e) => {
          if (e.alpha > 0.009) {
-            e.alpha *= 0.95
-            e.radius *= 0.99
+            e.alpha *= 0.95;
+            e.radius *= 0.99;
          } else {
-            e.alpha = 0
-            this.isDone = true
+            e.alpha = 0;
+            this.isDone = true;
          }
 
-         e.vX *= friction
-         e.vY += gravity
+         e.vX *= friction;
+         e.vY += gravity;
 
-         e.update()
-      })
+         e.update();
+      });
    }
 
    update() {
       if (this.isKaboom) {
          gsap.to(this.circle, {
             radius: 0,
-         })
-         this.circle.vX = 0
-         this.circle.vY = 0
-         this.updateParticles()
+         });
+         this.circle.vX = 0;
+         this.circle.vY = 0;
+         this.updateParticles();
       }
-         this.circle.vY += gravity
-         this.circle.vX *= friction
-         this.circle.radius *= 0.99
+      this.circle.vY += gravity;
+      this.circle.vX *= friction;
+      this.circle.radius *= 0.99;
 
-         if (this.circle.vY > -0.4 || this.circle.y < this.maxHeight) {
-            this.isKaboom = true
-         }
+      if (this.circle.vY > -0.4 || this.circle.y < this.maxHeight) {
+         this.isKaboom = true;
+      }
 
-         this.circle.update()
+      this.circle.update();
    }
 }
 

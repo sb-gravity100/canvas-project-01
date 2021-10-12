@@ -1,50 +1,66 @@
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
+const isDev = process.env.NODE_ENV === 'development';
 
 module.exports = {
-  entry: ['./src/index.ts'],
+  entry: {
+    main: ['./src/index.ts'],
+  },
   output: {
     filename: '[name].bundle.js',
     path: path.resolve(__dirname, 'build'),
     clean: true,
   },
   resolve: {
-    extensions: ['.js', '.ts']
+    extensions: ['.js', '.ts'],
   },
   stats: 'errors-warnings',
   devServer: {
     port: 3000,
     hot: true,
-    contentBase: './static',
-    contentBasePublicPath: '/static'
-    // proxy: [{
-    //   
-    // }]
+    proxy: [
+      {
+        context: ['/static'],
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+      },
+    ],
   },
   module: {
     rules: [
       {
         test: /\.ts$/,
-        use: ['ts-loader']
+        use: ['ts-loader'],
       },
       {
         test: /\.s(c|a)ss$/,
         exclude: /node_modules/,
         use: [
-          'style-loader',
+          isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
           'css-loader',
-          'sass-loader'
-        ]
+          'sass-loader',
+        ],
       },
       {
         test: /\.(jpe?g|png|svg|ico|bmp)/,
-        type: 'asset/resources'
-      }
-    ]
+        type: 'asset/resources',
+      },
+    ],
   },
-  devtool: 'source-map',
-  plugins: [new HTMLWebpackPlugin({
-    template: path.resolve(__dirname, 'public/index.html')
-  })],
+  devtool: isDev ? 'eval' : 'source-map',
+  plugins: [
+    new HTMLWebpackPlugin({
+      template: path.resolve(__dirname, 'public/index.html'),
+    }),
+    isDev && new MiniCssExtractPlugin(),
+  ].filter(Boolean),
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+    },
+    runtimeChunk: 'multiple',
+  },
 };
