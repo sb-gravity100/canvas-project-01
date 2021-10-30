@@ -1,44 +1,44 @@
-document.title = 'Hello Warudo';
-export const root = document.querySelector('#root') as HTMLDivElement;
-export const canvas = document.createElement('canvas') as HTMLCanvasElement;
-export const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
-root.append(canvas);
+import { Bodies, Engine, Runner, Render, Composite, Vector } from 'matter-js';
 
-canvas.width = innerWidth;
-canvas.height = innerHeight;
-let isMouseDown = false;
-export var centerX = canvas.width / 2,
-   centerY = canvas.height / 2;
-export var mouseX = centerX,
-   mouseY = centerY;
-export var clickX = 0, clickY = 0;
-export var globalTs = 0;
-export const gravity = 0.01, friction = 0.99;
+const canvas = document.querySelector('canvas') as HTMLCanvasElement;
+export const width = 800;
+export const height = 600;
+var centerX = canvas.width / 2;
+var centerY = canvas.height / 2;
+var engine = Engine.create();
+var render = Render.create({
+   engine,
+   canvas,
+   options: {
+      background: 'coral',
+      width,
+      height,
+   },
+});
+var runner = Runner.create();
 
-export function setGlobalTs(i: number) {
-   globalTs = i;
-}
-
-addEventListener('resize', () => {
-   canvas.height = innerHeight;
-   canvas.width = innerWidth;
-   centerX = canvas.width / 2;
-   centerY = canvas.height / 2;
+window.addEventListener('resize', () => {
+   var centerX = width / 2;
+   var centerY = height / 2;
+   // render.options.height = innerHeight;
+   // render.options.width = innerWidth;
 });
 
-// canvas.addEventListener('mousedown', handleMouseHold);
-// canvas.addEventListener('mouseup', handleMouseHold);
-canvas.addEventListener('click', handleMouseHold);
-canvas.addEventListener('mousemove', handleMouseHold);
+export function addToWorld(objects: Parameters<typeof Composite.add>[1]) {
+   return Composite.add(engine.world, objects);
+}
 
-function handleMouseHold(e: MouseEvent) {
-   if (e.type === 'mousemove') {
-      mouseX = e.offsetX;
-      mouseY = e.offsetY;
-   }
+function createWalls(thick = 10) {
+   const rad = thick / 2;
+   const ground = Bodies.rectangle(centerX, height - rad, width * 3, thick, {
+      isStatic: true,
+   });
+   addToWorld(ground);
+}
 
-   if (e.type === 'click') {
-      clickX = e.offsetX;
-      clickY = e.offsetY;
-   }
+createWalls();
+
+export function runEngine() {
+   Render.run(render);
+   Runner.run(runner, engine);
 }

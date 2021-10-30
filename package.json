@@ -1,37 +1,39 @@
 {
-  "name": "canvas-project-01",
-  "version": "1.0.0",
-  "main": "index.js",
-  "author": "SB",
-  "license": "MIT",
-  "devDependencies": {
-    "@types/animejs": "^3.1.4",
-    "@types/lodash": "^4.14.172",
-    "@types/node": "^8.10.66",
-    "css-loader": "^6.2.0",
-    "html-webpack-plugin": "^5.3.2",
-    "sass": "^1.38.0",
-    "sass-loader": "^12.1.0",
-    "style-loader": "^3.2.1",
-    "ts-loader": "^9.2.4",
-    "typescript": "^4.4.2",
-    "webpack": "^5.51.1",
-    "webpack-cli": "^4.7.2",
-    "webpack-dev-server": "^3.11.2"
-  },
-  "dependencies": {
-    "@chriscourses/perlin-noise": "^1.0.5",
-    "@types/faker": "^5.5.8",
-    "animejs": "^3.2.1",
-    "faker": "^5.5.3",
-    "fast-simplex-noise": "^4.0.0",
-    "gsap": "^3.7.1",
-    "lodash": "^4.17.21",
-    "nanoid": "^3.1.25",
-    "socket.io-client": "^4.1.3"
-  },
-  "scripts": {
-    "build": "webpack --mode production",
-    "start": "webpack serve --mode development"
-  }
+   "name": "canvas-project-01",
+   "version": "1.0.0",
+   "main": "index.js",
+   "author": "SB",
+   "license": "MIT",
+   "devDependencies": {
+      "@types/faker": "^5.5.8",
+      "@types/lodash": "^4.14.172",
+      "@types/node": "^8.10.66",
+      "@types/p5": "^1.3.1",
+      "css-loader": "^6.2.0",
+      "html-webpack-plugin": "^5.3.2",
+      "sass": "^1.38.0",
+      "sass-loader": "^12.1.0",
+      "style-loader": "^3.2.1",
+      "ts-loader": "^9.2.4",
+      "typescript": "^4.4.2",
+      "webpack": "^5.51.1",
+      "webpack-cli": "^4.7.2",
+      "webpack-dev-server": "^3"
+   },
+   "dependencies": {
+      "@chriscourses/perlin-noise": "^1.0.5",
+      "@types/matter-js": "^0.17.6",
+      "faker": "^5.5.3",
+      "gsap": "^3.8.0",
+      "khroma": "^1.4.1",
+      "lodash": "^4.17.21",
+      "matter-js": "^0.17.1",
+      "nanoid": "^3.1.30",
+      "p5": "^1.4.0",
+      "socket.io-client": "^4.1.3"
+   },
+   "scripts": {
+      "build": "webpack --mode production",
+      "start": "webpack serve --mode development"
+   }
 }

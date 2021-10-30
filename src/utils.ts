@@ -1,17 +1,12 @@
-import { canvas, ctx } from "./context";
 // import faker from 'faker'
-import gsap from 'gsap'
-
-const { utils } = gsap
-
-export const snapToCanvas = utils.mapRange(0, canvas.width, 0, canvas.width)
+import gsap from 'gsap';
 
 export function randomHSL(h?: any, s?: any, l?: any, a?: any) {
-   let hue = typeof h === 'number' ? h : Math.random() * 360
-   let sat = typeof s === 'number' ? s : Math.random() * 100
+   let hue = typeof h === 'number' ? h : Math.random() * 360;
+   let sat = typeof s === 'number' ? s : Math.random() * 100;
    let lum = typeof l === 'number' ? l : Math.random() * 100;
    let alpha = a || 1;
-   return `hsla(${hue}, ${sat}%, ${lum}%, ${alpha})`
+   return `hsla(${hue}, ${sat}%, ${lum}%, ${alpha})`;
 }
 
 export function checkCircleCollision(c1: any, c2: any) {
@@ -27,9 +22,9 @@ export function checkCircleCollision(c1: any, c2: any) {
    return collide;
 }
 export function randomNumber(max: number, min: number = 0, floor?: boolean) {
-   let num: number
-   num = (Math.random() * (max - min) + 1) + min
-   return floor ? Math.floor(num) : num
+   let num: number;
+   num = Math.random() * (max - min) + 1 + min;
+   return floor ? Math.floor(num) : num;
 }
 
 export function createElement(
@@ -45,19 +40,13 @@ export function createElement(
    return elem;
 }
 
-export function clearCanvas(color?: string) {
-   if (color) {
-      ctx.save()
-      ctx.fillStyle = color
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
-      ctx.restore()
-   } else {
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-   }
-}
-
-export function sineWave(index: number, len: number = 0.01, amp: number = 100, freq: number = 0) {
-   return Math.sin(index * len + freq) * amp
+export function sineWave(
+   index: number,
+   len: number = 0.01,
+   amp: number = 100,
+   freq: number = 0
+) {
+   return Math.sin(index * len + freq) * amp;
 }
 
 export function randomInterval(callback: Function, max: number, min: number) {
@@ -70,15 +59,19 @@ export function randomInterval(callback: Function, max: number, min: number) {
    randFunc();
 }
 
-export const distributeAngle = (objectCount: number) => (Math.PI * 2) / objectCount;
+export const distributeAngle = (objectCount: number) =>
+   (Math.PI * 2) / objectCount;
 export const distributeColor = (objectCount: number) => 360 / objectCount;
 
 export function toRadians(deg: number) {
-   return deg * (Math.PI / 180)
+   return deg * (Math.PI / 180);
 }
 
-export function callIfFunction<T>(f: T, ...args: T extends (...args: any[]) => any ? Parameters<T> : never) {
+export function callIfFunction<T>(
+   f: T,
+   ...args: T extends (...args: any[]) => any ? Parameters<T> : never
+) {
    if (typeof f === 'function') {
-      f(...args)
+      f(...args);
    }
 }
