@@ -1,9 +1,12 @@
+const { execSync } = require('child_process');
+const HTMLWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const webpack = require('webpack');
 
 const isProduction = process.env.NODE_ENV == 'production';
+const url = execSync('gp url 3000').toString().trim();
 
 const stylesHandler = isProduction
     ? MiniCssExtractPlugin.loader
@@ -16,14 +19,12 @@ const config = {
         filename: '[name].bundle.js',
     },
     devServer: {
-        // open: true,
-        host: 'localhost',
-        port: 3000,
-        static: [
-            {
-                directory: path.join(__dirname, 'public'),
-            },
-        ],
+      port: 3000,
+      hot: true,
+      public: url,
+      host: '0.0.0.0',
+      disableHostCheck: true,
+      allowedHosts: ['localhost', '*.gitpod.io'],
     },
     stats: 'errors-warnings',
     plugins: [
@@ -37,6 +38,7 @@ const config = {
     ],
     externals: {
         p5: 'p5',
+        gsap: 'gsap',
         lodash: {
             commonjs: 'lodash',
             amd: 'lodash',
