@@ -1,66 +1,77 @@
-const HTMLWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
-const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const webpack = require('webpack');
 
-const isDev = process.env.NODE_ENV === 'development';
+const isProduction = process.env.NODE_ENV == 'production';
 
-module.exports = {
-  entry: {
-    main: ['./src/index.ts'],
-  },
-  output: {
-    filename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'build'),
-    clean: true,
-  },
-  resolve: {
-    extensions: ['.js', '.ts'],
-  },
-  stats: 'errors-warnings',
-  devServer: {
-    port: 3000,
-    hot: true,
-    proxy: [
-      {
-        context: ['/static'],
-        target: 'http://localhost:5000',
-        changeOrigin: true,
-      },
-    ],
-  },
-  module: {
-    rules: [
-      {
-        test: /\.ts$/,
-        use: ['ts-loader'],
-      },
-      {
-        test: /\.s(c|a)ss$/,
-        exclude: /node_modules/,
-        use: [
-          isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
-          'css-loader',
-          'sass-loader',
-        ],
-      },
-      {
-        test: /\.(jpe?g|png|svg|ico|bmp)/,
-        type: 'asset/resources',
-      },
-    ],
-  },
-  devtool: isDev ? 'eval' : 'source-map',
-  plugins: [
-    new HTMLWebpackPlugin({
-      template: path.resolve(__dirname, 'public/index.html'),
-    }),
-    isDev && new MiniCssExtractPlugin(),
-  ].filter(Boolean),
-  optimization: {
-    splitChunks: {
-      chunks: 'all',
+const stylesHandler = isProduction
+    ? MiniCssExtractPlugin.loader
+    : 'style-loader';
+
+const config = {
+    entry: './src/index.ts',
+    output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: '[name].bundle.js',
     },
-    runtimeChunk: 'multiple',
-  },
+    devServer: {
+        // open: true,
+        host: 'localhost',
+        port: 3000,
+        static: [
+            {
+                directory: path.join(__dirname, 'public'),
+            },
+        ],
+    },
+    stats: 'errors-warnings',
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: './template.html',
+            title: 'Canvas',
+        }),
+        new webpack.ProvidePlugin({
+            perlin: ['@chriscourses/perlin-noise']
+        })
+    ],
+    externals: {
+        p5: 'p5',
+        lodash: {
+            commonjs: 'lodash',
+            amd: 'lodash',
+            root: '_',
+        },
+    },
+    module: {
+        rules: [
+            {
+                test: /\.(ts|tsx)$/i,
+                loader: 'ts-loader',
+                exclude: ['/node_modules/'],
+            },
+            {
+                test: /\.s[ac]ss$/i,
+                use: [stylesHandler, 'css-loader', 'sass-loader'],
+            },
+            {
+                test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
+                type: 'asset',
+            },
+        ],
+    },
+    resolve: {
+        extensions: ['.ts', '.js'],
+    },
+};
+
+module.exports = () => {
+    if (isProduction) {
+        config.mode = 'production';
+
+        config.plugins.push(new MiniCssExtractPlugin());
+    } else {
+        config.mode = 'development';
+    }
+    return config;
 };

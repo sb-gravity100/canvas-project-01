@@ -6,19 +6,20 @@
    "dependencies": {
       "cors": "^2.8.5",
       "debug": "^4.3.2",
-      "dotenv": "^10.0.0",
       "express": "^4.17.1",
-      "morgan": "^1.10.0"
+      "express-handlebars": "^5.3.4",
+      "express-jwt": "^6.1.0",
+      "morgan": "^1.10.0",
+      "socket.io": "^4.2.0"
    },
    "devDependencies": {
       "@types/cors": "^2.8.12",
       "@types/debug": "^4.1.7",
       "@types/express": "^4.17.13",
+      "@types/express-handlebars": "^5.3.1",
+      "@types/express-jwt": "^6.0.2",
       "@types/morgan": "^1.9.3",
-      "@types/node": "^16.10.3",
-      "nodemon": "^2.0.13",
-      "ts-node": "^10.2.1",
-      "typescript": "^4.4.3"
+      "@types/node": "^16.10.4"
    },
    "scripts": {
       "start": "nodemon ./src/index.ts"

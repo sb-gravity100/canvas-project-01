@@ -1,0 +1,39 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+
+  &:focus {
+    outline: none;
+  }
+  &::before,
+  &::after {
+    box-sizing: border-box;
+  }
+}
+
+body {
+  font-family: "Lucida Grande", "Helvetica", sans-serif;
+  line-height: 1.3;
+}
+
+button {
+  padding: 5px;
+  background: white;
+  border: none;
+}
+
+a {
+  color: #000;
+  text-decoration: none;
+}
+
+.d-none {
+  display: none !important;
+}
+
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+}
