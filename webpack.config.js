@@ -1,18 +1,18 @@
-const { execSync } = require('child_process');
-const HTMLWebpackPlugin = require('html-webpack-plugin');
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const webpack = require('webpack');
+var HTMLWebpackPlugin = require('html-webpack-plugin');
+var path = require('path');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
+var MiniCssExtractPlugin = require('mini-css-extract-plugin');
+var webpack = require('webpack');
 
-const isProduction = process.env.NODE_ENV == 'production';
-const url = execSync('gp url 3000').toString().trim();
+var isProduction = process.env.NODE_ENV == 'production';
+var isWindows = require('os').type().search(/windows/i) > -1
 
-const stylesHandler = isProduction
+var stylesHandler = isProduction
     ? MiniCssExtractPlugin.loader
     : 'style-loader';
 
-const config = {
+var config = {
+    mode: 'development',
     entry: './src/index.ts',
     output: {
         path: path.resolve(__dirname, 'dist'),
@@ -32,9 +32,6 @@ const config = {
             template: './template.html',
             title: 'Canvas',
         }),
-        new webpack.ProvidePlugin({
-            perlin: ['@chriscourses/perlin-noise']
-        })
     ],
     externals: {
         p5: 'p5',
@@ -72,8 +69,12 @@ module.exports = () => {
         config.mode = 'production';
 
         config.plugins.push(new MiniCssExtractPlugin());
+    }
+
+    if (!isWindows) {
+        config.devServer.public = require('child_process').execSync('gp url 3000').toString().trim();
     } else {
-        config.mode = 'development';
+        config.devServer.host = 'localhost'
     }
     return config;
 };
