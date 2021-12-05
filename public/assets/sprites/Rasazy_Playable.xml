@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="BOYFRIEND.png">
+	<!-- Created with Adobe Animate version 20.0.0.17400 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="BF NOTE DOWN0000" x="581" y="5" width="566" height="716" frameX="0" frameY="270" frameWidth="385" frameHeight="112"/>
+	<SubTexture name="BF NOTE DOWN0001" x="1157" y="5" width="566" height="716" frameX="0" frameY="270" frameWidth="385" frameHeight="112"/>
+	<SubTexture name="BF NOTE LEFT0000" x="5" y="1457" width="566" height="716" frameX="0" frameY="310" frameWidth="385" frameHeight="112"/>
+	<SubTexture name="BF NOTE LEFT0001" x="581" y="1457" width="566" height="716" frameX="0" frameY="310" frameWidth="385" frameHeight="112"/>
+	<SubTexture name="BF NOTE RIGHT0000" x="1157" y="1457" width="566" height="716" frameX="0" frameY="270" frameWidth="385" frameHeight="112"/>
+	<SubTexture name="BF NOTE RIGHT0001" x="1733" y="5" width="566" height="716" frameX="0" frameY="270" frameWidth="385" frameHeight="112"/>
+	<SubTexture name="BF NOTE UP0000" x="5" y="5" width="566" height="716" frameX="0" frameY="310" frameWidth="385" frameHeight="112"/>
+	<SubTexture name="BF NOTE UP0001" x="1733" y="731" width="566" height="716" frameX="0" frameY="310" frameWidth="385" frameHeight="112"/>
+	<SubTexture name="BF idle dance0000" x="5" y="731" width="566" height="716" frameX="0" frameY="270" frameWidth="385" frameHeight="112"/>
+	<SubTexture name="BF idle dance0001" x="581" y="731" width="566" height="716" frameX="0" frameY="270" frameWidth="385" frameHeight="112"/>
+	<SubTexture name="BF idle dance0002" x="1157" y="731" width="566" height="716" frameX="0" frameY="270" frameWidth="385" frameHeight="112"/>
+	<SubTexture name="BF idle dance0003" x="1733" y="1457" width="566" height="716" frameX="0" frameY="264" frameWidth="385" frameHeight="112"/>
+</TextureAtlas>

@@ -1,6 +1,7 @@
 import { LoDashStatic } from 'lodash';
 import 'p5/global';
 import 'gsap';
+import ld from 'lodash'
 import _p5 from 'p5';
 
 type AnyObject<T = any, K extends string = string> = Record<K, T>;
@@ -10,16 +11,10 @@ declare module '*.svg' {
    export default data;
 }
 
-type Camera = {
-   active: boolean;
-   init: boolean;
-   mouseX: number;
-   mouseY: number;
-   off(): void;
-   on(): void;
-   position: _p5.Vector;
-   zoom: number;
-};
+declare module '*.html' {
+   const data: string;
+   export default data;
+}
 
 type AllSprites = {
    add(s: Sprite): any;
@@ -42,16 +37,70 @@ type AllSprites = {
 
 type p5Prot = typeof p5.prototype;
 
+
 declare global {
-   var p5: typeof _p5 & P5Play;
+   var _: typeof ld
+   var p5: typeof _p5 & P5Play & p5Sound;
    var camera: Camera;
    interface Window extends p5Prot {
       p5: typeof p5;
+      _: typeof ld
    }
    type SpriteFrame = {
       name: string;
-      frame: AnyObject<number, 'x' | 'y' | 'width' | 'height'>;
+      frame: AnyObject<number, 'x' | 'y' | 'width' | 'height'> & {
+         framewidth?: number
+         frameheight?: number
+         framex?: number
+         framey?: number
+      };
    };
+   type Camera = {
+      active: boolean;
+      init: boolean;
+      mouseX: number;
+      mouseY: number;
+      off(): void;
+      on(): void;
+      position: _p5.Vector;
+      zoom: number;
+   };
+
+   type PP = typeof p5.prototype
+
+   interface p5 extends PP {}
+
+   interface p5Sound {
+      prototype: {
+         loadSound: typeof loadSound
+      }
+   }
+
+   type INotes = {
+      lengthInSteps: number;
+      typeOfSection: number;
+      sectionNotes: number[][];
+      altAnim: boolean;
+      bpm: number;
+      changeBPM: boolean;
+      mustHitSection: boolean;
+   };
+
+   type SongData = {
+      player1: string;
+      player2: string;
+      song: string;
+      notes: INotes[];
+      validScore: boolean;
+      sections: number;
+      needsVoices: boolean;
+      bpm: number;
+      speed: number;
+   };
+
+   function loadSound(src: string, success?: (...args: any) => any, error?: (...args: any) => any, whileLoading?: (...args: any) => any): _p5.SoundFile
+
+   // function synced
 
    interface P5Play {
       prototype: {
@@ -68,13 +117,16 @@ declare global {
             n: number
          ): SpriteSheet;
          loadSpriteSheet(path: string, frames: SpriteFrame[]): SpriteSheet;
-         loadAnimation(sheet: SpriteSheet): Animation;
-         loadAnimation(...args: string[]): Animation;
+         loadAnimation(sheet: SpriteSheet): p5Animation;
+         loadAnimation(...args: string[]): p5Animation;
          camera: Camera;
          drawSprites(g?: any): any;
          drawSprite(arg: Sprite): any;
-         animation(anim: Animation, x: number, y: number);
+         animation(anim: p5Animation, x: number, y: number);
          allSprites: AllSprites;
+         Animation: p5Animation
+         Sprite: Sprite
+         SpriteSheet: SpriteSheet
       };
    }
 
@@ -112,14 +164,14 @@ declare global {
       debug: boolean;
       shapeColor: _p5.Color;
       groups: any[];
-      animation: Animation;
+      animation: p5Animation;
       onMouseOver: () => any;
       onMouseOut: () => any;
       onMousePressed: () => any;
       onMouseReleased: () => any;
 
       AABBops(type, target, callback): any;
-      addAnimation(f: string, a?: Animation): any;
+      addAnimation(f: string, a?: p5Animation): any;
       addImage(): any;
       addSpeed(speed, angle): any;
       addToGroup(group): any;
@@ -150,7 +202,7 @@ declare global {
       update(): any;
    }
 
-   class Animation {
+   class p5Animation {
       constructor(...args: any[]) {}
       changeFrame(f): any;
       clone(): any;

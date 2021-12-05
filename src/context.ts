@@ -1,44 +1,51 @@
-import { Bodies, Engine, Runner, Render, Composite, Vector } from 'matter-js';
-
-const canvas = document.querySelector('canvas') as HTMLCanvasElement;
-export const width = 800;
-export const height = 600;
-var centerX = canvas.width / 2;
-var centerY = canvas.height / 2;
-var engine = Engine.create();
-var render = Render.create({
-   engine,
-   canvas,
-   options: {
-      background: 'coral',
-      width,
-      height,
+export const canvas = document.querySelector('canvas') as HTMLCanvasElement;
+export const ctx =  canvas.getContext('2d') as CanvasRenderingContext2D
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+export var centerX = canvas.width / 2;
+export var centerY = canvas.height / 2;
+export var mouse = {
+   position: {
+      x: 0,
+      y: 0
    },
-});
-var runner = Runner.create();
+   pressPosition: {
+      x: 0,
+      y: 0
+   },
+   releasePosition: {
+      x: 0,
+      y: 0
+   },
+   isPressed: false,
+   released: () => {}
+}
 
 window.addEventListener('resize', () => {
-   var centerX = width / 2;
-   var centerY = height / 2;
+   centerX = canvas.width / 2;
+   centerY = canvas.height / 2;
+   canvas.width = innerWidth;
+   canvas.height = innerHeight;
    // render.options.height = innerHeight;
    // render.options.width = innerWidth;
 });
 
-export function addToWorld(objects: Parameters<typeof Composite.add>[1]) {
-   return Composite.add(engine.world, objects);
-}
+canvas.addEventListener('mousemove', e => {
+   mouse.position.x = e.offsetX
+   mouse.position.y = e.offsetY
+})
 
-function createWalls(thick = 10) {
-   const rad = thick / 2;
-   const ground = Bodies.rectangle(centerX, height - rad, width * 3, thick, {
-      isStatic: true,
-   });
-   addToWorld(ground);
-}
+canvas.addEventListener('mousedown', e => {
+   mouse.pressPosition.x = e.offsetX
+   mouse.pressPosition.y = e.offsetY
 
-createWalls();
+   mouse.isPressed = true
+})
 
-export function runEngine() {
-   Render.run(render);
-   Runner.run(runner, engine);
-}
+canvas.addEventListener('mouseup', e => {
+   mouse.releasePosition.x = e.offsetX
+   mouse.releasePosition.y = e.offsetY
+   mouse.isPressed = false
+
+   mouse.released()
+})

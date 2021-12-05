@@ -4,14 +4,83 @@
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title><%= htmlWebpackPlugin.options.title %></title>
+      <!-- <script src="/gsap/gsap.min.js"></script> -->
+      <link
+         href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+         rel="stylesheet"
+         integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+         crossorigin="anonymous"
+      />
+      <style>
+         body {
+            font-family: "Lucida Grande", "Helvetica", sans-serif;
+            line-height: 1.3;
+         }
+         #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            display: grid;
+            place-items: center;
+            background: white;
+         }
+      </style>
+
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <script
+         src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
+         integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"
+         crossorigin="anonymous"
+      ></script>
+      <script
+         src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"
+         integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13"
+         crossorigin="anonymous"
+      ></script>
+      <script src="/lodash.min.js"></script>
+      <script src="/p5.js"></script>
+      <script src="/p5.sound.js"></script>
+      <!-- <script src="/p5.play.js"></script> -->
+      <script type="text/javascript">
+         // new p5();
+      </script>
    </head>
    <body>
-      <script src="/gsap/gsap.min.js"></script>
-      <script src="/lodash.min.js"></script>
-      <script src="/p5.min.js"></script>
-      <script src="/p5.play.js"></script>
-      <script type="text/javascript">
-         new p5();
-      </script>
+      <div id="loading-screen" class="position-fixed top-0 start-0 bg-light"><span>Loading...</span></div>
+      <div id="formMain" class="container d-flex align-items-center justify-content-center" style="height: 100vh;">
+         <form method="GET" class="d-grid gap-2" >
+            <div>
+               <label class="form-label" for="p1Select">Player 1</label>
+               <select
+                  class="form-select"
+                  name="player1"
+                  id="p1Select"
+               ></select>
+            </div>
+            <div>
+               <label class="form-label" for="p2Select">Player 2</label>
+               <select
+                  class="form-select"
+                  name="player2"
+                  id="p2Select"
+               ></select>
+            </div>
+            <div>
+               <label class="form-label" for="gfSelect">GF</label>
+               <select
+                  class="form-select"
+                  name="gf"
+                  id="gfSelect"
+               ></select>
+            </div>
+            <div>
+               <label class="form-label" for="songSelect">Song</label>
+               <select class="form-select" name="song" id="songSelect"></select>
+            </div>
+            <button type="submit" class="btn btn-primary">Go!</button>
+         </form>
+      </div>
    </body>
 </html>

@@ -5,10 +5,7 @@ var MiniCssExtractPlugin = require('mini-css-extract-plugin');
 var webpack = require('webpack');
 
 var isProduction = process.env.NODE_ENV == 'production';
-var isWindows =
-   require('os')
-      .type()
-      .search(/windows/i) > -1;
+varisGitpod = (process.env.USER || '').match(/gitpod/i);
 
 var stylesHandler = isProduction ? MiniCssExtractPlugin.loader : 'style-loader';
 
@@ -27,10 +24,9 @@ var config = {
       allowedHosts: ['localhost', '*.gitpod.io'],
       contentBase: './public',
       proxy: {
-         '/assets': {
-            target: 'http://localhost:5500',
+         '/api': {
+            target: 'http://localhost:8000',
             changeOrigin: true,
-            pathRewrite: { '^/assets': '' },
          },
       },
    },
@@ -64,7 +60,7 @@ var config = {
          {
             test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
             type: 'asset',
-         },
+         }
       ],
    },
    resolve: {
@@ -79,9 +75,13 @@ module.exports = () => {
       config.plugins.push(new MiniCssExtractPlugin());
    }
 
-   if (!isWindows) {
+   if (isGitpod) {
       config.devServer.public = require('child_process')
          .execSync('gp url 3000')
+         .toString()
+         .trim();
+      config.devServer.proxy['/api'].target = require('child_process')
+         .execSync('gp url 8000')
          .toString()
          .trim();
    } else {

@@ -2,26 +2,33 @@ const path = require('path');
 const { Parser } = require('htmlparser2');
 const _ = require('lodash');
 const fs = require('fs').promises;
-const _fs = require('fs');
+const { pascalCase } = require('change-case');
+ const { readFileSync } = require('fs');
 
 var dir = './public/assets/sprites';
 var obj = [];
+var options = {
+   splitRegexp: /([a-z])([A-Z0-9])/g,
+};
 var parser;
 var onopentag = (_name, attr) => {
    var temp = {
-      frame: {}
+      name: '',
+      frame: {
+         width: 0,
+         height: 0,
+      }
    };
    var hasName = _.has(attr, 'name') || _.has(attr, 'n');
-   var isW = _.has(attr, 'w');
-   var isN = _.has(attr, 'n')
    if (hasName) {
       _.assign(temp.frame, attr);
-      temp.name = attr.name || attr.n
-      if (isW) {
-         temp.frame.width = attr.w;
-         temp.frame.height = attr.h;
-      }
+      temp.name = pascalCase(attr.name || attr.n, options)
+      temp.frame.width = attr.width || attr.w;
+      temp.frame.height = attr.height || attr.w;
       // console.log(temp)
+      delete temp.frame.name
+      delete temp.frame.w
+      delete temp.frame.h
       obj.push(temp);
    }
 };

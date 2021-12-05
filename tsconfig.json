@@ -1,8 +1,8 @@
 {
     "compilerOptions": {
         "incremental": true,
-        "target": "es5",
-        "module": "es2015",
+        "target": "es6",
+        "module": "commonjs",
         "lib": ["dom", "esnext", "es5", "es6"],
         "sourceMap": true,
         "outDir": "./build",
