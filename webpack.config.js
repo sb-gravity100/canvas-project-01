@@ -5,7 +5,7 @@ var MiniCssExtractPlugin = require('mini-css-extract-plugin');
 var webpack = require('webpack');
 
 var isProduction = process.env.NODE_ENV == 'production';
-varisGitpod = (process.env.USER || '').match(/gitpod/i);
+var isGitpod = (process.env.USER || '').match(/gitpod/i);
 
 var stylesHandler = isProduction ? MiniCssExtractPlugin.loader : 'style-loader';
 
@@ -60,7 +60,7 @@ var config = {
          {
             test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
             type: 'asset',
-         }
+         },
       ],
    },
    resolve: {
