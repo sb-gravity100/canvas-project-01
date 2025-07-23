@@ -65,6 +65,9 @@ var config = {
    },
    resolve: {
       extensions: ['.ts', '.js'],
+      fallback: {
+         timers: false,
+      },
    },
 };
 

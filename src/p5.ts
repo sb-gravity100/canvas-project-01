@@ -1,4 +1,5 @@
 import { Element, Image, SoundFile } from 'p5';
+import timers, { clearImmediate, clearTimeout, setTimeout } from 'timers';
 import { SpriteAnimation } from './Objects';
 
 type AnyObject<T = any, K extends string = string> = Record<K, T>;
@@ -168,7 +169,7 @@ export function init(
             audio.inst?.play();
             audio.voice?.play();
          });
-         let del = 50;
+         let del = 200;
          audio.song?.notes?.forEach((e) => {
             let hit = e.mustHitSection;
             e.sectionNotes.forEach((v) => {
@@ -179,6 +180,7 @@ export function init(
                // console.log(v[0] / 1000)
                if (!hit) {
                   audio.inst?.addCue(cueHit, () => {
+                     timers.clearImmediate(prevTime);
                      let index = key;
                      let currentImg = 'idle';
                      if (index > 3) {
@@ -186,13 +188,14 @@ export function init(
                      }
                      currentImg = arrows[index] as any;
                      anim.changeAnimation(currentImg);
-                     audio.inst?.addCue(cueHit + hold, () => {
+                     prevTime = timers.setTimeout(() => {
                         currentImg = 'idle';
                         anim.changeAnimation(currentImg);
-                     });
+                     }, hold + del);
                   });
                   if (key > 3) {
                      audio.inst?.addCue(cueHit, () => {
+                        timers.clearTimeout(prevTime2);
                         let index = key;
                         let currentImg = 'idle';
                         if (index > 3) {
@@ -201,14 +204,15 @@ export function init(
                         currentImg = arrows[index] as any;
                         anim2.frameDelay = 1;
                         anim2.changeAnimation(currentImg);
-                        audio.inst?.addCue(cueHit + hold, () => {
+                        prevTime2 = timers.setTimeout(() => {
                            currentImg = 'idle';
                            anim2.changeAnimation(currentImg);
-                        });
+                        }, hold + del);
                      });
                   }
                } else {
                   audio.inst?.addCue(cueHit, () => {
+                     timers.clearTimeout(prevTime3);
                      let index = key;
                      let currentImg = 'idle';
                      if (index > 3) {
@@ -216,13 +220,14 @@ export function init(
                      }
                      currentImg = arrows[index] as any;
                      anim2.changeAnimation(currentImg);
-                     audio.inst?.addCue(cueHit + hold, () => {
+                     prevTime3 = timers.setTimeout(() => {
                         currentImg = 'idle';
                         anim2.changeAnimation(currentImg);
-                     });
+                     }, hold + del);
                   });
                   if (key > 3) {
                      audio.inst?.addCue(cueHit, () => {
+                        timers.clearTimeout(prevTime4);
                         let index = key;
                         let currentImg = 'idle';
                         if (index > 3) {
@@ -230,10 +235,10 @@ export function init(
                         }
                         currentImg = arrows[index] as any;
                         anim.changeAnimation(currentImg);
-                        audio.inst?.addCue(cueHit + hold, () => {
+                        prevTime4 = timers.setTimeout(() => {
                            currentImg = 'idle';
                            anim.changeAnimation(currentImg);
-                        });
+                        }, hold + del);
                      });
                   }
                }
