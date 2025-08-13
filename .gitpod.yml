@@ -1,3 +1,5 @@
 tasks:
    - name: Init
-     command: yarn
+     command: yarn |
+        cd server |
+        yarn

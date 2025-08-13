@@ -1,5 +1,4 @@
 import { Element, Image, SoundFile } from 'p5';
-import timers, { clearImmediate, clearTimeout, setTimeout } from 'timers';
 import { SpriteAnimation } from './Objects';
 
 type AnyObject<T = any, K extends string = string> = Record<K, T>;
@@ -48,11 +47,11 @@ export function init(
          ts = performance.now() / 1000;
          fps = Math.floor(p.frameCount / ts);
          // camera
-         // p.push()
-         // p.translate(centerX, centerY)
-         // p.imageMode('center')
-         // p.image(bgImg, 0, 0)
-         // p.pop()
+         p.push();
+         p.translate(centerX, centerY);
+         p.imageMode('center');
+         p.image(bgImg, 0, 0, innerWidth);
+         p.pop();
       }
       let audio = {} as Stereo;
       let startFx: SoundFile[] = [];
@@ -68,6 +67,15 @@ export function init(
       let scale2 = 0.5;
       let delay = 25;
       let gfAnim = new SpriteAnimation(p);
+
+      toggleButton = p.createButton('Toggle');
+      flipP1 = p.createButton('Flip Player1');
+      flipP2 = p.createButton('Flip Player2');
+      volume = p.createSlider(0, 1, 0.1, 0.01);
+      sizeP1 = p.createSlider(0, 1, 0, 0.01);
+
+      posP2 = p.createSlider(0, innerHeight, innerHeight * 0.6, 1);
+      // posP1 = p.createSlider(0, 2, 1, 0.01);
 
       function flipPlayer(a: SpriteAnimation) {
          a.mirrorX();
@@ -175,12 +183,12 @@ export function init(
             e.sectionNotes.forEach((v) => {
                let [start, key, hold] = v;
                let cueHit = start / 1000;
-               console.log(cueHit);
+               // console.log(cueHit);
                cueHit -= 0.26;
                // console.log(v[0] / 1000)
                if (!hit) {
                   audio.inst?.addCue(cueHit, () => {
-                     timers.clearImmediate(prevTime);
+                     window.clearTimeout(prevTime);
                      let index = key;
                      let currentImg = 'idle';
                      if (index > 3) {
@@ -188,14 +196,14 @@ export function init(
                      }
                      currentImg = arrows[index] as any;
                      anim.changeAnimation(currentImg);
-                     prevTime = timers.setTimeout(() => {
+                     prevTime = window.setTimeout(() => {
                         currentImg = 'idle';
                         anim.changeAnimation(currentImg);
                      }, hold + del);
                   });
                   if (key > 3) {
                      audio.inst?.addCue(cueHit, () => {
-                        timers.clearTimeout(prevTime2);
+                        window.clearTimeout(prevTime2);
                         let index = key;
                         let currentImg = 'idle';
                         if (index > 3) {
@@ -204,7 +212,7 @@ export function init(
                         currentImg = arrows[index] as any;
                         anim2.frameDelay = 1;
                         anim2.changeAnimation(currentImg);
-                        prevTime2 = timers.setTimeout(() => {
+                        prevTime2 = window.setTimeout(() => {
                            currentImg = 'idle';
                            anim2.changeAnimation(currentImg);
                         }, hold + del);
@@ -212,22 +220,23 @@ export function init(
                   }
                } else {
                   audio.inst?.addCue(cueHit, () => {
-                     timers.clearTimeout(prevTime3);
-                     let index = key;
-                     let currentImg = 'idle';
-                     if (index > 3) {
-                        index -= 4;
-                     }
-                     currentImg = arrows[index] as any;
-                     anim2.changeAnimation(currentImg);
-                     prevTime3 = timers.setTimeout(() => {
-                        currentImg = 'idle';
-                        anim2.changeAnimation(currentImg);
-                     }, hold + del);
+                     console.log(arrows[key]);
+                     // window.clearTimeout(prevTime3);
+                     // let index = key;
+                     // let currentImg = 'idle';
+                     // if (index > 3) {
+                     //    index -= 4;
+                     // }
+                     // currentImg = arrows[index] as any;
+                     // anim2.changeAnimation(currentImg);
+                     // prevTime3 = window.setTimeout(() => {
+                     //    currentImg = 'idle';
+                     //    anim2.changeAnimation(currentImg);
+                     // }, hold + del);
                   });
                   if (key > 3) {
                      audio.inst?.addCue(cueHit, () => {
-                        timers.clearTimeout(prevTime4);
+                        window.clearTimeout(prevTime4);
                         let index = key;
                         let currentImg = 'idle';
                         if (index > 3) {
@@ -235,7 +244,7 @@ export function init(
                         }
                         currentImg = arrows[index] as any;
                         anim.changeAnimation(currentImg);
-                        prevTime4 = timers.setTimeout(() => {
+                        prevTime4 = window.setTimeout(() => {
                            currentImg = 'idle';
                            anim.changeAnimation(currentImg);
                         }, hold + del);
@@ -248,30 +257,21 @@ export function init(
 
       p.setup = () => {
          p.createCanvas(p.windowWidth, p.windowHeight);
-         let animHalfHeight = anim.getHeight() / 2;
-         let anim2HalfHeight = anim2.getHeight() / 2;
+         p.frameRate(60);
+
          // p.noLoop();
-         toggleButton = p.createButton('Toggle');
-         flipP1 = p.createButton('Flip Player1');
-         flipP2 = p.createButton('Flip Player2');
-         volume = p.createSlider(0, 1, 0.1, 0.01);
-         sizeP2 = p.createSlider(0, 1, 0, 0.01);
-         sizeP1 = p.createSlider(0, 1, 0, 0.01);
+
          sizeP1.value(scale);
-         sizeP2.value(scale2);
-         posP2 = p.createSlider(0, 2, 1, 0.01);
-         posP1 = p.createSlider(0, 2, 1, 0.01);
          sizeP1.mouseMoved(() => {
+            anim.scale = sizeP1.value() as number;
             anim2.scale = sizeP1.value() as number;
          });
-         sizeP2.mouseMoved(() => {
-            anim.scale = sizeP2.value() as number;
-         });
-         posP1.mouseMoved(() => {
-            anim2.position.y = centerY * (posP1.value() as number);
-         });
+         // posP1.mouseMoved(() => {
+         //    anim2.position.y = centerY * (posP1.value() as number);
+         // });
          posP2.mouseMoved(() => {
-            anim.position.y = centerY * (posP2.value() as number);
+            anim.position.y = posP2.value() as number;
+            anim2.position.y = posP2.value() as number;
          });
          // volume.style('position:fixed');
          // toggleButton.style('position:fixed');
@@ -307,16 +307,16 @@ export function init(
          // anim.mirrorX(true)
          anim.scale = scale;
          anim.frameDelay = 2;
-         anim.position.set(innerWidth * 0.25, centerY - animHalfHeight);
+         anim.position.set(innerWidth * 0.25, innerHeight * 0.6);
          anim.changeAnimation('idle');
-         console.log(anim);
 
          // anim2.mirrorX(true)
          anim2.scale = scale2;
          anim2.frameDelay = 2;
-         anim2.position.set(innerWidth * 0.75, centerY - anim2HalfHeight);
+
+         console.log(anim.getHeight());
+
          anim2.changeAnimation('idle');
-         console.log(anim2);
 
          gfAnim.scale = 0.4;
          gfAnim.frameDelay = delay;
@@ -347,6 +347,7 @@ export function init(
          centerX = p.windowWidth / 2;
          centerY = p.windowHeight / 2;
          bgImg.resize(0, innerHeight);
+         gfAnim.position.set(centerX, centerY * 1.2);
          // (p.camera as any as Camera).position.x = centerX;
          // (p.camera as any as Camera).position.y = centerY;
       };
@@ -362,6 +363,10 @@ export function init(
          gfAnim.draw();
          anim.draw();
          anim2.draw();
+         let anim2Height = innerHeight * 0.6;
+         anim2Height += anim.getHeight() / 2;
+         anim2Height -= anim2.getHeight() / 2;
+         anim2.position.set(innerWidth * 0.75, anim2Height);
 
          if (anim2.getAnimationLabel() !== 'idle') {
             anim2.frameDelay = 2;

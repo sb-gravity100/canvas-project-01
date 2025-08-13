@@ -32,8 +32,8 @@ export class SpriteAnimation {
    private _flipY = false;
    private averageWidth = 0;
    private averageHeight = 0;
-   private width = 0
-   private height = 0
+   private width = 0;
+   private height = 0;
 
    set originalFrames(v: SpriteFrameWithImage[]) {
       this._originalFrames = v;
@@ -64,11 +64,10 @@ export class SpriteAnimation {
 
       const frame = this.getFrameImage()?.frame;
       if (frame) {
-         var { framex = 0, framey = 0 } = frame
          var width = frame.width;
          var height = frame.height;
-         this.width = width * this.scale
-         this.height = height * this.scale
+         this.width = width * this.scale;
+         this.height = height * this.scale;
          const img =
             this.getFrameImage()?.image ||
             (this.image.get(
@@ -169,7 +168,7 @@ export class SpriteAnimation {
    }
 
    removeAnimation(label?: string) {
-      var index = this.animations.findIndex(v => v.label === label);
+      var index = this.animations.findIndex((v) => v.label === label);
       if (index > -1) {
          this.animations.splice(index, 1);
       }
@@ -182,7 +181,7 @@ export class SpriteAnimation {
    changeAnimation(label: string) {
       this.currentAnimationLabel = label;
       var res = this.animations.find(
-         v => v.label === this.currentAnimationLabel
+         (v) => v.label === this.currentAnimationLabel
       );
       if (res) {
          // this.averageWidth = _.chain(res.frames)
