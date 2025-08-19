@@ -363,7 +363,7 @@ export function init(
          gfAnim.draw();
          anim.draw();
          anim2.draw();
-         let anim2Height = innerHeight * 0.6;
+         let anim2Height = anim.position.y;
          anim2Height += anim.getHeight() / 2;
          anim2Height -= anim2.getHeight() / 2;
          anim2.position.set(innerWidth * 0.75, anim2Height);
