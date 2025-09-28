@@ -372,6 +372,13 @@ export function init(
          gfAnim.draw();
          anim.draw();
          anim2.draw();
+<<<<<<< HEAD
+=======
+         let anim2Height = anim.position.y;
+         anim2Height += anim.getHeight() / 2;
+         anim2Height -= anim2.getHeight() / 2;
+         anim2.position.set(innerWidth * 0.75, anim2Height);
+>>>>>>> 7f3a3a7bbbf922b39467eeec4c1fe6dc85d22dcf
 
          if (anim2.getAnimationLabel() !== 'idle') {
             anim2.frameDelay = 2;
