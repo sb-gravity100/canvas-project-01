@@ -36,12 +36,12 @@ window.addEventListener('resize', () => {
    // render.options.width = innerWidth;
 });
 
-addEventListener('mousemove', (e) => {
+canvas.addEventListener('mousemove', (e) => {
    mouse.position.x = e.offsetX;
    mouse.position.y = e.offsetY;
 });
 
-addEventListener('mousedown', (e) => {
+canvas.addEventListener('mousedown', (e) => {
    mouse.pressPosition.x = e.offsetX;
    mouse.pressPosition.y = e.offsetY;
    console.log('mousedown');
@@ -49,7 +49,7 @@ addEventListener('mousedown', (e) => {
    mouse.isDown = true;
 });
 
-addEventListener('mouseup', (e) => {
+canvas.addEventListener('mouseup', (e) => {
    mouse.releasePosition.x = e.offsetX;
    mouse.releasePosition.y = e.offsetY;
    mouse.isDown = false;

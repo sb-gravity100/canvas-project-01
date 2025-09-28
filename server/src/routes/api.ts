@@ -41,3 +41,15 @@ route.get('/list/sprites', (req, res, next) => {
       }
    );
 });
+
+route.get('/list/bg', (req, res, next) => {
+   fs.readdir(
+      path.join(assets, 'bg'),
+      { withFileTypes: true },
+      (err, files) => {
+         if (err) next(err);
+         var mapped = files.filter((e) => !e.isDirectory()).map((e) => e.name);
+         res.json(mapped);
+      }
+   );
+});

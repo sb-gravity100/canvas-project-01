@@ -1,5 +1,4 @@
-import { Image, Vector } from 'p5';
-import { ctx } from './context';
+import { Font, Image, Vector } from 'p5';
 
 type SpriteFrameWithImage = SpriteFrame & {
    image: Image;
@@ -35,6 +34,7 @@ export class SpriteAnimation {
    private averageHeight = 0;
    private width = 0;
    private height = 0;
+   visible = true;
 
    set originalFrames(v: SpriteFrameWithImage[]) {
       this._originalFrames = v;
@@ -52,6 +52,7 @@ export class SpriteAnimation {
    onComplete() {}
 
    draw(this: SpriteAnimation) {
+      if (!this.visible) return;
       this._update();
       var scaleX = 1;
       var scaleY = 1;
@@ -229,7 +230,7 @@ export class CanvasUIElement {
       this.p5 = p;
       this.size = size;
       this.position = position;
-      window.addEventListener('click', () => {
+      addEventListener('click', () => {
          this.clickEvent();
       });
    }
@@ -240,10 +241,12 @@ export class CanvasUIElement {
       if (!this.visible) return;
       const mouseX = this.p5.mouseX;
       const mouseY = this.p5.mouseY;
-      const left = this.position.x - this.size.x / 2;
-      const right = this.position.x + this.size.x / 2;
-      const top = this.position.y - this.size.y / 2;
-      const bottom = this.position.y + this.size.y / 2;
+      const actualSizeX = this.size.x * this.scale;
+      const actualSizeY = this.size.y * this.scale;
+      const left = this.position.x - actualSizeX / 2;
+      const right = this.position.x + actualSizeX / 2;
+      const top = this.position.y - actualSizeY / 2;
+      const bottom = this.position.y + actualSizeY / 2;
       if (mouseX > left && mouseX < right && mouseY > top && mouseY < bottom) {
          this.onClick();
       }
@@ -260,7 +263,7 @@ export class UIButton extends CanvasUIElement {
    text = '';
    textSize = 16;
    textColor = '#000000';
-   textFont = 'Arial';
+   textFont: string | object = 'Arial';
    backgroundColor = '#ffffff';
    borderColor = '#000000';
    borderWidth = 1;
@@ -325,19 +328,32 @@ export class UIButton extends CanvasUIElement {
 }
 
 export class UIImage extends CanvasUIElement {
-   image: Image;
-   constructor(p: p5, size: Vector, position: Vector, image: Image) {
-      super(p, size, position);
-      this.image = image;
+   image?: Image;
+   constructor(p: p5, size?: Vector, position?: Vector, image?: Image) {
+      super(
+         p,
+         size || p.createVector(100, 100),
+         position || p.createVector(100, 100)
+      );
+      if (image) {
+         this.image = image;
+      }
    }
    draw() {
+      if (!this.image) return;
       if (!this.visible) return;
       this.p5.push();
       this.p5.translate(this.position.x, this.position.y);
       this.p5.rotate(this.p5.radians(this.rotation));
       this.p5.scale(this.scale);
       this.p5.imageMode(this.p5.CENTER);
-      this.p5.image(this.image, 0, 0, this.size.x, this.size.y);
+      this.p5.image(
+         this.image,
+         0,
+         0,
+         this.size.x * this.scale,
+         this.size.y * this.scale
+      );
       this.p5.pop();
    }
 }
@@ -347,7 +363,7 @@ export class UIText extends CanvasUIElement {
    textSize = 16;
    textColor = '#000000';
    textAlign: 'left' | 'center' | 'right' = 'center';
-   textFont = 'Arial';
+   textFont: string | object = 'Arial';
    textBorderColor = '#000000';
    textBorderWidth = 0;
    textOpacity = 1;
@@ -369,7 +385,6 @@ export class UIText extends CanvasUIElement {
             : this.p5.CENTER,
          this.p5.CENTER
       );
-      ctx.globalAlpha = this.textOpacity;
       if (this.textBorderWidth > 0) {
          this.p5.stroke(this.textBorderColor);
          this.p5.strokeWeight(this.textBorderWidth);
