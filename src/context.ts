@@ -1,5 +1,7 @@
 export const canvas = document.querySelector('canvas') as HTMLCanvasElement;
 export const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+ctx.imageSmoothingEnabled = true;
+ctx.imageSmoothingQuality = 'high';
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 export var centerX = canvas.width / 2;
@@ -17,7 +19,7 @@ export var mouse = {
       x: 0,
       y: 0,
    },
-   isPressed: false,
+   isDown: false,
    released: () => {},
 };
 
@@ -34,22 +36,23 @@ window.addEventListener('resize', () => {
    // render.options.width = innerWidth;
 });
 
-canvas.addEventListener('mousemove', (e) => {
+addEventListener('mousemove', (e) => {
    mouse.position.x = e.offsetX;
    mouse.position.y = e.offsetY;
 });
 
-canvas.addEventListener('mousedown', (e) => {
+addEventListener('mousedown', (e) => {
    mouse.pressPosition.x = e.offsetX;
    mouse.pressPosition.y = e.offsetY;
+   console.log('mousedown');
 
-   mouse.isPressed = true;
+   mouse.isDown = true;
 });
 
-canvas.addEventListener('mouseup', (e) => {
+addEventListener('mouseup', (e) => {
    mouse.releasePosition.x = e.offsetX;
    mouse.releasePosition.y = e.offsetY;
-   mouse.isPressed = false;
+   mouse.isDown = false;
 
    mouse.released();
 });

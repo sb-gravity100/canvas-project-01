@@ -11,7 +11,7 @@
       />
       <style>
          body {
-            font-family: "Lucida Grande", "Helvetica", sans-serif;
+            font-family: 'Lucida Grande', 'Helvetica', sans-serif;
             line-height: 1.3;
          }
          #loading-screen {
@@ -27,12 +27,8 @@
       </style>
 
       <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-      <script
-         src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
-      ></script>
-      <script
-         src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"
-      ></script>
+      <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
       <script src="/lodash.min.js"></script>
       <script src="/p5.js"></script>
       <script src="/p5.sound.js"></script>
@@ -42,9 +38,16 @@
       </script>
    </head>
    <body>
-      <div id="loading-screen" class="position-fixed top-0 start-0 bg-light"><span>Loading...</span></div>
-      <div id="formMain" class="container d-flex align-items-center justify-content-center" style="height: 100vh;">
-         <form method="GET" class="d-grid gap-2" >
+      <canvas></canvas>
+      <div id="loading-screen" class="position-fixed top-0 start-0 bg-light">
+         <span>Loading...</span>
+      </div>
+      <div
+         id="formMain"
+         class="container d-flex align-items-center justify-content-center"
+         style="height: 100vh"
+      >
+         <form method="GET" class="d-grid gap-2">
             <div>
                <label class="form-label" for="p1Select">Player 1</label>
                <select
@@ -63,11 +66,7 @@
             </div>
             <div>
                <label class="form-label" for="gfSelect">GF</label>
-               <select
-                  class="form-select"
-                  name="gf"
-                  id="gfSelect"
-               ></select>
+               <select class="form-select" name="gf" id="gfSelect"></select>
             </div>
             <div>
                <label class="form-label" for="songSelect">Song</label>

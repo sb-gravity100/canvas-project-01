@@ -1,4 +1,5 @@
 import { Image, Vector } from 'p5';
+import { ctx } from './context';
 
 type SpriteFrameWithImage = SpriteFrame & {
    image: Image;
@@ -215,4 +216,170 @@ export class SpriteAnimation {
          this.frame = i;
       }
    }
+}
+
+export class CanvasUIElement {
+   p5: p5;
+   position: Vector;
+   size: Vector;
+   rotation = 0;
+   scale = 1;
+   visible = true;
+   constructor(p: p5, size: Vector, position: Vector) {
+      this.p5 = p;
+      this.size = size;
+      this.position = position;
+      window.addEventListener('click', () => {
+         this.clickEvent();
+      });
+   }
+   draw() {}
+   update() {}
+   onClick() {}
+   clickEvent() {
+      if (!this.visible) return;
+      const mouseX = this.p5.mouseX;
+      const mouseY = this.p5.mouseY;
+      const left = this.position.x - this.size.x / 2;
+      const right = this.position.x + this.size.x / 2;
+      const top = this.position.y - this.size.y / 2;
+      const bottom = this.position.y + this.size.y / 2;
+      if (mouseX > left && mouseX < right && mouseY > top && mouseY < bottom) {
+         this.onClick();
+      }
+   }
+   onHover() {}
+   onUnhover() {}
+   onMouseDown() {}
+   onMouseUp() {}
+   onKeyPressed() {}
+   onKeyReleased() {}
+}
+
+export class UIButton extends CanvasUIElement {
+   text = '';
+   textSize = 16;
+   textColor = '#000000';
+   textFont = 'Arial';
+   backgroundColor = '#ffffff';
+   borderColor = '#000000';
+   borderWidth = 1;
+   borderRadius = 0;
+   hoverBackgroundColor = '#dddddd';
+   hoverTextColor = '#000000';
+   isHovering = false;
+   constructor(p: p5, size: Vector, position: Vector, text: string) {
+      super(p, size, position);
+      this.text = text;
+   }
+   draw() {
+      if (!this.visible) return;
+      this.p5.push();
+      this.p5.translate(this.position.x, this.position.y);
+      this.p5.rotate(this.p5.radians(this.rotation));
+      this.p5.scale(this.scale);
+      this.p5.rectMode(this.p5.CENTER);
+      this.p5.textFont(this.textFont);
+      this.p5.textAlign(this.p5.CENTER, this.p5.CENTER);
+      this.p5.textSize(this.textSize);
+      this.p5.stroke(this.borderColor);
+      this.p5.strokeWeight(this.borderWidth);
+      if (this.isHovering) {
+         this.p5.fill(this.hoverBackgroundColor);
+      } else {
+         this.p5.fill(this.backgroundColor);
+      }
+      this.p5.rect(0, 0, this.size.x, this.size.y, this.borderRadius);
+      if (this.isHovering) {
+         this.p5.fill(this.hoverTextColor);
+      } else {
+         this.p5.fill(this.textColor);
+      }
+      this.p5.text(this.text, 0, 0);
+      this.p5.pop();
+   }
+   update() {
+      if (!this.visible) return;
+      const mouseX = this.p5.mouseX;
+      const mouseY = this.p5.mouseY;
+      const left = this.position.x - this.size.x / 2;
+      const right = this.position.x + this.size.x / 2;
+      const top = this.position.y - this.size.y / 2;
+      const bottom = this.position.y + this.size.y / 2;
+      if (mouseX > left && mouseX < right && mouseY > top && mouseY < bottom) {
+         if (!this.isHovering) {
+            this.isHovering = true;
+            this.onHover();
+            // check for click events
+            if (this.p5.mouseIsPressed) {
+               this.onMouseDown();
+            }
+         }
+      } else {
+         if (this.isHovering) {
+            this.isHovering = false;
+            this.onUnhover();
+         }
+      }
+   }
+}
+
+export class UIImage extends CanvasUIElement {
+   image: Image;
+   constructor(p: p5, size: Vector, position: Vector, image: Image) {
+      super(p, size, position);
+      this.image = image;
+   }
+   draw() {
+      if (!this.visible) return;
+      this.p5.push();
+      this.p5.translate(this.position.x, this.position.y);
+      this.p5.rotate(this.p5.radians(this.rotation));
+      this.p5.scale(this.scale);
+      this.p5.imageMode(this.p5.CENTER);
+      this.p5.image(this.image, 0, 0, this.size.x, this.size.y);
+      this.p5.pop();
+   }
+}
+
+export class UIText extends CanvasUIElement {
+   text = '';
+   textSize = 16;
+   textColor = '#000000';
+   textAlign: 'left' | 'center' | 'right' = 'center';
+   textFont = 'Arial';
+   textBorderColor = '#000000';
+   textBorderWidth = 0;
+   textOpacity = 1;
+   constructor(p: p5, position: Vector, text: string) {
+      super(p, p.createVector(0, 0), position);
+      this.text = text;
+   }
+   draw() {
+      if (!this.visible) return;
+      this.p5.push();
+      this.p5.translate(this.position.x, this.position.y);
+      this.p5.rotate(this.p5.radians(this.rotation));
+      this.p5.scale(this.scale);
+      this.p5.textAlign(
+         this.textAlign === 'left'
+            ? this.p5.LEFT
+            : this.textAlign === 'right'
+            ? this.p5.RIGHT
+            : this.p5.CENTER,
+         this.p5.CENTER
+      );
+      ctx.globalAlpha = this.textOpacity;
+      if (this.textBorderWidth > 0) {
+         this.p5.stroke(this.textBorderColor);
+         this.p5.strokeWeight(this.textBorderWidth);
+      }
+      this.p5.textSize(this.textSize);
+      this.p5.textFont(this.textFont);
+      this.p5.fill(this.textColor);
+      // opacity
+      this.p5.text(this.text, 0, 0);
+      this.p5.pop();
+   }
+   update() {}
 }

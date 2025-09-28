@@ -1,5 +1,6 @@
 import { Element, Image, SoundFile } from 'p5';
-import { SpriteAnimation } from './Objects';
+import { SpriteAnimation, UIButton, UIText } from './Objects';
+import { mouse } from './context';
 
 type AnyObject<T = any, K extends string = string> = Record<K, T>;
 type Stereo = {
@@ -26,21 +27,22 @@ function filterFramesRegExp<K extends SpriteFrame>(
    return frames.filter((e) => regexp.test(e.name));
 }
 
-export function init(
-   name = 'zavodila',
-   char2 = 'BOYFRIEND',
-   char = 'ruv_sheet',
-   gf = 'DDLCGF_ass_sets'
-) {
+export function init(song, sprite) {
    let sketch = (p: p5) => {
       let centerX = p.windowWidth / 2;
       let centerY = p.windowHeight / 2;
       let ts = performance.now() / 1000;
       let fps = Math.floor(p.frameCount / ts);
 
+      let name = 'zavodila',
+         char2 = 'BOYFRIEND',
+         char = 'ruv_sheet',
+         gf = 'DDLCGF_ass_sets';
+
       let anim = new SpriteAnimation(p);
       let anim2 = new SpriteAnimation(p);
       let bgImg: Image;
+      let charSelection: SpriteAnimation[];
 
       function drawBg() {
          p.clear();
@@ -53,6 +55,7 @@ export function init(
          p.image(bgImg, 0, 0, innerWidth);
          p.pop();
       }
+      let mode = 'menu';
       let audio = {} as Stereo;
       let startFx: SoundFile[] = [];
       let toggleButton: Element;
@@ -67,6 +70,39 @@ export function init(
       let scale2 = 0.4;
       let delay = 25;
       let gfAnim = new SpriteAnimation(p);
+      let logo = p.loadImage('/assets/logo.png');
+      let btnPressStart = new UIText(
+         p,
+         p.createVector(centerX, centerY * 1.8),
+         'Press to Enter'
+      );
+      let btnReturnMenu = new UIButton(
+         p,
+         p.createVector(100, 80),
+         p.createVector(innerHeight * 0.15, innerHeight * 0.9),
+         'Back'
+      );
+
+      btnPressStart.textSize = 60;
+      btnPressStart.textFont = 'Courier New';
+      btnPressStart.textColor = 'white';
+      btnPressStart.textBorderColor = 'black';
+      btnPressStart.textBorderWidth = 4;
+
+      btnReturnMenu.textSize = 35;
+      btnReturnMenu.textColor = 'white';
+      btnReturnMenu.textFont = 'Courier New';
+      btnReturnMenu.backgroundColor = '#284b63';
+      btnReturnMenu.borderRadius = 5;
+      btnReturnMenu.hoverBackgroundColor = '#153243';
+      btnReturnMenu.onClick = () => {
+         mode = '';
+         setTimeout(() => {
+            mode = 'menu';
+         }, 500);
+         alpha = 0;
+      };
+      // btnReturnMenu.hoverBackgroundColor =
 
       toggleButton = p.createButton('Toggle');
       flipP1 = p.createButton('Flip Player1');
@@ -80,6 +116,83 @@ export function init(
       function flipPlayer(a: SpriteAnimation) {
          a.mirrorX();
       }
+      let psOpVal = -0.2;
+      let alpha = 0;
+
+      console.log(p);
+
+      function drawMenuUI() {
+         if (btnPressStart.textSize < 60) {
+            psOpVal *= -1;
+         } else if (btnPressStart.textSize > 70) {
+            psOpVal *= -1;
+         }
+         if (alpha < 1) {
+            alpha += 0.05;
+         }
+         btnPressStart.textSize += psOpVal;
+         p.push();
+         // black background
+         p.colorMode('hsl');
+         p.fill(0, 0, 0, alpha);
+         p.rect(0, 0, innerWidth, innerHeight);
+         gfAnim.position.set(centerX * 1.5, centerY * 0.9);
+         gfAnim.frameDelay = 60;
+
+         p.imageMode(p.CENTER);
+         p.image(
+            logo,
+            centerX * 0.5,
+            centerY * 0.8,
+            logo.width * 0.6,
+            logo.height * 0.6
+         );
+         gfAnim.scale = 0.8;
+         btnPressStart.draw();
+         gfAnim.draw();
+         p.pop();
+
+         if (mouse.isDown) {
+            mode = '';
+            setTimeout(() => {
+               mode = 'select';
+            }, 500);
+            alpha = 0;
+         }
+      }
+
+      function drawSelectUI() {
+         if (alpha < 1) {
+            alpha += 0.05;
+         }
+         p.push();
+         p.colorMode('hsl', 360, 100, 100, 1);
+         p.fill(49, 99, 54, alpha);
+         p.rect(0, 0, innerWidth, innerHeight);
+         btnReturnMenu.update();
+         btnReturnMenu.draw();
+         p.pop();
+      }
+
+      p.preload = () => {
+         gfAnim.image = p.loadImage('/assets/sprites/' + gf + '.png');
+         p.loadJSON('/assets/sprites/' + gf + '.json', (ar) => {
+            gfAnim.originalFrames = ar;
+            ['cheer', 'dancingbeat', 'fear', 'sad'].forEach((v) => {
+               gfAnim.addAnimation(v, (b) => {
+                  let res = filterFramesRegExp(b, new RegExp(v + '_', 'i'));
+                  if (res.length < 3) {
+                     return res;
+                  }
+                  gfAnim.changeAnimation('dancingbeat');
+                  // return res.filter((e, i) => i % 4 === 0);
+                  return [res[0], res[Math.floor(res.length * 0.65)]];
+               });
+            });
+            gfAnim.changeAnimation('dancingbeat');
+         });
+         gfAnim.scale = 1;
+      };
 
       function loadSongData() {
          let songURL = '/assets/musix/' + name;
@@ -99,7 +212,7 @@ export function init(
          });
          anim.image = p.loadImage('/assets/sprites/' + char + '.png');
          anim2.image = p.loadImage('/assets/sprites/' + char2 + '.png');
-         gfAnim.image = p.loadImage('/assets/sprites/' + gf + '.png');
+
          p.loadJSON('/assets/sprites/' + char + '.json', (ar) => {
             anim.originalFrames = ar;
             arrows.forEach((e) => {
@@ -138,31 +251,7 @@ export function init(
                });
             });
          });
-
-         p.loadJSON('/assets/sprites/' + gf + '.json', (ar) => {
-            gfAnim.originalFrames = ar;
-            ['cheer', 'dancingbeat', 'fear', 'sad'].forEach((v) => {
-               gfAnim.addAnimation(v, (b) => {
-                  let res = filterFramesRegExp(b, new RegExp(v + '_', 'i'));
-                  if (res.length < 3) {
-                     return res;
-                  }
-                  gfAnim.changeAnimation('dancingbeat');
-                  // return res.filter((e, i) => i % 4 === 0);
-                  return [res[0], res[Math.floor(res.length * 0.65)]];
-               });
-            });
-            gfAnim.changeAnimation('dancingbeat');
-         });
       }
-
-      p.preload = () => {
-         loadSongData();
-      };
-
-      // function addAnimationOnCue(anim: SpriteAnimation, notes: number[]) {
-      //    let [start, key, hold] = notes
-      // }
 
       let prevTime;
       let prevTime2;
@@ -255,12 +344,7 @@ export function init(
          });
       }
 
-      p.setup = () => {
-         p.createCanvas(p.windowWidth, p.windowHeight);
-         p.frameRate(60);
-
-         // p.noLoop();
-
+      function setupFight() {
          sizeP1.value(scale);
          sizeP1.mouseMoved(() => {
             anim.scale = sizeP1.value() as number;
@@ -332,21 +416,30 @@ export function init(
          gfAnim.position.set(centerX, centerY * 1.2);
          gfAnim.changeAnimation('dancingbeat');
          // console.log(gfAnim);
-         bgImg.resize(0, innerHeight);
+         // bgImg.resize(0, innerHeight);
+      }
+
+      p.setup = () => {
+         p.createCanvas(innerWidth, innerHeight);
+         p.frameRate(60);
+
+         // p.noLoop();
       };
       p.keyPressed = () => {
-         delay = Math.floor(fps / ((audio.song.bpm || 130) / 60)) * 2;
-         if (p.keyCode === p.UP_ARROW) {
-            anim2.changeAnimation('up');
-         }
-         if (p.keyCode === p.DOWN_ARROW) {
-            anim2.changeAnimation('down');
-         }
-         if (p.keyCode === p.LEFT_ARROW) {
-            anim2.changeAnimation('left');
-         }
-         if (p.keyCode === p.RIGHT_ARROW) {
-            anim2.changeAnimation('right');
+         if (mode === 'fight') {
+            delay = Math.floor(fps / ((audio.song.bpm || 130) / 60)) * 2;
+            if (p.keyCode === p.UP_ARROW) {
+               anim2.changeAnimation('up');
+            }
+            if (p.keyCode === p.DOWN_ARROW) {
+               anim2.changeAnimation('down');
+            }
+            if (p.keyCode === p.LEFT_ARROW) {
+               anim2.changeAnimation('left');
+            }
+            if (p.keyCode === p.RIGHT_ARROW) {
+               anim2.changeAnimation('right');
+            }
          }
          // console.log(anim);
       };
@@ -355,8 +448,8 @@ export function init(
          p.resizeCanvas(p.windowWidth, p.windowHeight);
          centerX = p.windowWidth / 2;
          centerY = p.windowHeight / 2;
-         bgImg.resize(0, innerHeight);
-         gfAnim.position.set(centerX, centerY * 1.2);
+         // bgImg.resize(0, innerHeight);
+         // gfAnim.position.set(centerX, centerY * 1.2);
          // (p.camera as any as Camera).position.x = centerX;
          // (p.camera as any as Camera).position.y = centerY;
       };
@@ -367,18 +460,11 @@ export function init(
          }
       };
 
-      p.draw = () => {
+      function drawMainGame() {
          drawBg();
          gfAnim.draw();
          anim.draw();
          anim2.draw();
-<<<<<<< HEAD
-=======
-         let anim2Height = anim.position.y;
-         anim2Height += anim.getHeight() / 2;
-         anim2Height -= anim2.getHeight() / 2;
-         anim2.position.set(innerWidth * 0.75, anim2Height);
->>>>>>> 7f3a3a7bbbf922b39467eeec4c1fe6dc85d22dcf
 
          if (anim2.getAnimationLabel() !== 'idle') {
             anim2.frameDelay = 2;
@@ -397,18 +483,28 @@ export function init(
          //    anim.frameDelay = delay;
          //    anim2.frameDelay = delay;
          // }
+      }
+
+      p.draw = () => {
+         p.push();
+         p.fill(0, 50);
+         p.rect(0, 0, innerWidth, innerHeight);
+         p.pop();
+         if (mode === 'menu') {
+            drawMenuUI();
+         }
+         if (mode === 'select') {
+            drawSelectUI();
+         }
+         if (mode === 'fight') {
+         }
       };
    };
 
    new p5(sketch);
 }
 
-let p1 = $('select#p1Select') as JQuery<HTMLSelectElement>;
-let p2 = $('select#p2Select') as JQuery<HTMLSelectElement>;
-let gfSel = $('select#gfSelect') as JQuery<HTMLSelectElement>;
-let songSelect = $('select#songSelect') as JQuery<HTMLSelectElement>;
 let loading = $('#loading-screen');
-let params = new URLSearchParams(location.search.slice(1));
 
 async function fetchAll() {
    let song: string[];
@@ -435,37 +531,12 @@ async function fetchAll() {
       sessionStorage.setItem('song-json', JSON.stringify(song));
    }
 
-   sprites.forEach((v) => {
-      let el = `<option value="${v}">${v}</option>`;
-      p1.append(el);
-      p2.append(el);
-      if (v.match(/gf/i)) {
-         gfSel.append(el);
-      }
-   });
-
-   song.forEach((v) => {
-      let el = `<option value="${v}">${v}</option>`;
-      songSelect.append(el);
-   });
-
-   loading.addClass(() => 'd-none');
+   console.log('Done');
+   return [song, sprites];
 }
 
-if (
-   params.has('player1') &&
-   params.has('player2') &&
-   params.has('song') &&
-   params.has('gf')
-) {
-   $('#formMain').addClass(() => 'd-none');
-   loading.addClass(() => 'd-none');
-   init(
-      params.get('song') as string,
-      params.get('player1') as string,
-      params.get('player2') as string,
-      params.get('gf') as string
-   );
-} else {
-   fetchAll();
-}
+$('#formMain').addClass(() => 'd-none');
+loading.addClass(() => 'd-none');
+fetchAll().then((e) => {
+   init(e[0], e[1]);
+});
