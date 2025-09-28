@@ -44,6 +44,25 @@ export function init(song, sprite) {
       let bgImg: Image;
       let charSelection: SpriteAnimation[];
 
+      p.preload = () => {
+         gfAnim.image = p.loadImage('/assets/sprites/' + gf + '.png');
+         p.loadJSON('/assets/sprites/' + gf + '.json', (ar) => {
+            gfAnim.originalFrames = ar;
+            ['cheer', 'dancingbeat', 'fear', 'sad'].forEach((v) => {
+               gfAnim.addAnimation(v, (b) => {
+                  let res = filterFramesRegExp(b, new RegExp(v + '_', 'i'));
+                  if (res.length < 3) {
+                     return res;
+                  }
+                  gfAnim.changeAnimation('dancingbeat');
+                  // return res.filter((e, i) => i % 4 === 0);
+                  return [res[0], res[Math.floor(res.length * 0.65)]];
+               });
+            });
+            gfAnim.changeAnimation('dancingbeat');
+         });
+      };
+
       function drawBg() {
          p.clear();
          ts = performance.now() / 1000;
@@ -173,26 +192,6 @@ export function init(song, sprite) {
          btnReturnMenu.draw();
          p.pop();
       }
-
-      p.preload = () => {
-         gfAnim.image = p.loadImage('/assets/sprites/' + gf + '.png');
-         p.loadJSON('/assets/sprites/' + gf + '.json', (ar) => {
-            gfAnim.originalFrames = ar;
-            ['cheer', 'dancingbeat', 'fear', 'sad'].forEach((v) => {
-               gfAnim.addAnimation(v, (b) => {
-                  let res = filterFramesRegExp(b, new RegExp(v + '_', 'i'));
-                  if (res.length < 3) {
-                     return res;
-                  }
-                  gfAnim.changeAnimation('dancingbeat');
-                  // return res.filter((e, i) => i % 4 === 0);
-                  return [res[0], res[Math.floor(res.length * 0.65)]];
-               });
-            });
-            gfAnim.changeAnimation('dancingbeat');
-         });
-         gfAnim.scale = 1;
-      };
 
       function loadSongData() {
          let songURL = '/assets/musix/' + name;
