@@ -1,4 +1,4 @@
-import { Element, Image, SoundFile } from 'p5';
+import { Element, Image, MediaElement, SoundFile } from 'p5';
 import { SpriteAnimation, UIButton, UIImage, UIText } from './Objects';
 import { mouse } from './context';
 import _gsap from 'gsap/gsap-core';
@@ -51,21 +51,42 @@ export function init(song, sprite, bglist) {
       let selectArrows = {} as any;
       let charSelection: SpriteAnimation[] = [];
       let audioSelection: string[] = song;
-      let audioList: SoundFile[][] = [];
+      let audioList: MediaElement[][] = [];
       let bgList: Image[] = [];
       let currentAudio = 0;
       let currentChar = 6;
       let currentBg = 0;
+      anim2 = new SpriteAnimation(p);
 
       p.preload = () => {
+         anim2.image = p.loadImage('/assets/sprites/BOYFRIEND.png');
+         p.loadJSON('/assets/sprites/BOYFRIEND.json', (ar) => {
+            anim2.originalFrames = ar;
+            arrows.forEach((e) => {
+               anim2.addAnimation(e, (b, i) => {
+                  // console.log(b)
+                  let clean = Array.from(b).filter(
+                     (v) => !v.name.match(/alt|miss|shaking|mad/i)
+                  );
+                  let res = clean.filter((v) =>
+                     v.name.match(new RegExp(e, 'i'))
+                  );
+                  // if (e !== 'idle') {
+                  //    res = res.filter(v => v.name.match(/_2/i))
+                  // }
+                  // return res.filter((e, i) => i % 4 === 0);
+                  return [res[0], res[Math.floor(res.length * 0.65)]];
+               });
+            });
+         });
          bglist.forEach((e) => {
             p.loadImage('/assets/bg/' + e, (r) => {
                bgList.push(r);
             });
          });
          song.forEach((e: string) => {
-            const inst = p.loadSound('/assets/musix/' + e + '/Inst.ogg');
-            const voc = p.loadSound('/assets/musix/' + e + '/Voices.ogg');
+            const inst = p.createAudio('/assets/musix/' + e + '/Inst.ogg');
+            const voc = p.createAudio('/assets/musix/' + e + '/Voices.ogg');
             audioList.push([inst, voc]);
          });
          sprite
@@ -219,24 +240,24 @@ export function init(song, sprite, bglist) {
                   console.log(charSelection[currentChar]);
                };
                selectArrows.left.onClick = () => {
-                  audioList[currentAudio][0].stop(2);
-                  audioList[currentAudio][1].stop(2);
+                  audioList[currentAudio][0].stop();
+                  audioList[currentAudio][1].stop();
                   currentAudio--;
                   if (currentAudio < 0) {
                      currentAudio = audioSelection.length - 1;
                   }
-                  audioList[currentAudio][0].play(2);
-                  audioList[currentAudio][1].play(2);
+                  audioList[currentAudio][0].play();
+                  audioList[currentAudio][1].play();
                };
                selectArrows.right.onClick = () => {
-                  audioList[currentAudio][0].stop(2);
-                  audioList[currentAudio][1].stop(2);
+                  audioList[currentAudio][0].stop();
+                  audioList[currentAudio][1].stop();
                   currentAudio++;
                   if (currentAudio > audioSelection.length - 1) {
                      currentAudio = 0;
                   }
-                  audioList[currentAudio][0].play(2);
-                  audioList[currentAudio][1].play(2);
+                  audioList[currentAudio][0].play();
+                  audioList[currentAudio][1].play();
                };
                selectArrows.left2.onClick = () => {
                   currentBg--;
@@ -327,10 +348,6 @@ export function init(song, sprite, bglist) {
       btnPressStart.textColor = 'white';
       btnPressStart.textBorderColor = 'black';
       btnPressStart.textBorderWidth = 4;
-      btnPressStart.onClick = () => {
-         anim = charSelection[currentChar];
-         audio.inst = audioList[0];
-      };
 
       btnReturnMenu.textSize = 35;
       btnReturnMenu.textColor = 'white';
@@ -357,7 +374,26 @@ export function init(song, sprite, bglist) {
       btnStart.borderWidth = 10;
       btnStart.hoverBackgroundColor = '#aa00aa';
       btnStart.hoverTextColor = 'white';
-      btnStart.onClick = () => {};
+      btnStart.onClick = () => {
+         audioList[currentAudio][0].stop();
+         audioList[currentAudio][1].stop();
+         anim = charSelection[currentChar];
+         bgImg = bgList[currentBg];
+         audio.inst = audioList[currentAudio][0];
+         audio.voice = audioList[currentAudio][1];
+         p.loadJSON(
+            '/assets/data/' + audioSelection[currentAudio] + '/default.json',
+            (r) => {
+               audio.song = r.song;
+               loadCues();
+               alpha = 1;
+               setTimeout(() => {
+                  mode = 'fight';
+                  setupFight();
+               }, 1500);
+            }
+         );
+      };
 
       toggleButton = p.createButton('Toggle');
       flipP1 = p.createButton('Flip Player1');
@@ -421,8 +457,8 @@ export function init(song, sprite, bglist) {
             setTimeout(() => {
                mode = 'select';
                setTimeout(() => {
-                  audioList[currentAudio][0].play(2);
-                  audioList[currentAudio][1].play(2);
+                  audioList[currentAudio][0].play();
+                  audioList[currentAudio][1].play();
                }, 1500);
             }, 500);
             alpha = 0;
@@ -525,6 +561,7 @@ export function init(song, sprite, bglist) {
       let prevTime3;
       let prevTime4;
       function loadCues() {
+         console.log(audio);
          startFx[0].onended(() => startFx[1].play());
          startFx[1].onended(() => startFx[2].play());
          startFx[2].onended(() => startFx[3].play());
@@ -612,56 +649,57 @@ export function init(song, sprite, bglist) {
       }
 
       function setupFight() {
-         sizeP1.value(scale);
-         sizeP1.mouseMoved(() => {
-            anim.scale = sizeP1.value() as number;
-            anim2.scale = sizeP1.value() as number;
-         });
+         // sizeP1.value(scale);
+         // sizeP1.mouseMoved(() => {
+         //    anim.scale = sizeP1.value() as number;
+         //    anim2.scale = sizeP1.value() as number;
+         // });
          // posP1.mouseMoved(() => {
          //    anim2.position.y = centerY * (posP1.value() as number);
          // });
-         posP2.mouseMoved(() => {
-            anim.position.y = posP2.value() as number;
-            let anim2Height = anim.position.y;
-            anim2Height += anim.getHeight() / 2;
-            anim2Height -= anim2.getHeight() / 2;
-            anim2.position.set(innerWidth * 0.75, anim2Height);
-         });
+         // posP2.mouseMoved(() => {
+         //    anim.position.y = posP2.value() as number;
+         //    let anim2Height = anim.position.y;
+         //    anim2Height += anim.getHeight() / 2;
+         //    anim2Height -= anim2.getHeight() / 2;
+         //    anim2.position.set(innerWidth * 0.75, anim2Height);
+         // });
          // volume.style('position:fixed');
          // toggleButton.style('position:fixed');
-         toggleButton.mouseClicked(() => {
-            if (audio.playing) {
-               audio.playing = false;
-               audio.inst?.stop();
-               audio.voice?.stop();
-               _.invokeMap(startFx, 'stop');
-               // cues.forEach(audio.inst?.removeCue as any);
-               anim.changeAnimation('idle');
-               anim2.changeAnimation('idle');
-            } else {
-               startFx[0].play();
-               // audio.inst?.volume(0)
-               // audio.voice?.volume(0)
-            }
-         });
-         volume.mouseMoved(() => {
-            _.invokeMap(startFx, 'setVolume', volume.value());
-            audio.inst?.volume(volume.value());
-            audio.voice?.volume(volume.value());
-         });
+         // toggleButton.mouseClicked(() => {
+         //    if (audio.playing) {
+         //       audio.playing = false;
+         //       audio.inst?.stop();
+         //       audio.voice?.stop();
+         //       _.invokeMap(startFx, 'stop');
+         //       // cues.forEach(audio.inst?.removeCue as any);
+         //       anim.changeAnimation('idle');
+         //       anim2.changeAnimation('idle');
+         //    } else {
+         //       startFx[0].play();
+         //       // audio.inst?.volume(0)
+         //       // audio.voice?.volume(0)
+         //    }
+         // });
+         // volume.mouseMoved(() => {
+         //    _.invokeMap(startFx, 'setVolume', volume.value());
+         //    audio.inst?.volume(volume.value());
+         //    audio.voice?.volume(volume.value());
+         // });
 
-         flipP1.mouseClicked(() => {
-            flipPlayer(anim2);
-         });
+         // flipP1.mouseClicked(() => {
+         //    flipPlayer(anim2);
+         // });
 
-         flipP2.mouseClicked(() => {
-            flipPlayer(anim);
-         });
+         // flipP2.mouseClicked(() => {
+         //    flipPlayer(anim);
+         // });
+         console.log(p);
 
          // anim.mirrorX(true)
          anim.scale = scale;
          anim.frameDelay = 2;
-         let animHeight = innerHeight * 0.68;
+         let animHeight = innerHeight * 0.95;
          animHeight -= anim.getHeight() / 2;
          anim.position.set(innerWidth * 0.25, animHeight);
          anim.changeAnimation('idle');
@@ -672,7 +710,7 @@ export function init(song, sprite, bglist) {
          let anim2Height = anim.position.y;
          anim2Height += anim.getHeight() / 2;
          anim2Height -= anim2.getHeight() / 2;
-         anim2.position.set(innerWidth * 0.75, anim2Height);
+         anim2.position.set(innerWidth * 0.75, animHeight * 1.15);
 
          console.log(anim.getHeight());
 
@@ -684,6 +722,9 @@ export function init(song, sprite, bglist) {
          gfAnim.changeAnimation('dancingbeat');
          // console.log(gfAnim);
          // bgImg.resize(0, innerHeight);
+         setTimeout(() => {
+            startFx[0].play();
+         }, 1500);
       }
 
       p.setup = () => {
@@ -728,6 +769,9 @@ export function init(song, sprite, bglist) {
       };
 
       function drawMainGame() {
+         if (alpha > 0) {
+            alpha -= 0.05;
+         }
          drawBg();
          gfAnim.draw();
          anim.draw();
@@ -750,6 +794,12 @@ export function init(song, sprite, bglist) {
          //    anim.frameDelay = delay;
          //    anim2.frameDelay = delay;
          // }
+         p.push();
+         p.colorMode('hsl');
+         p.fill(0, 0, 0, alpha);
+         // p.
+         p.rect(0, 0, innerWidth, innerHeight);
+         p.pop();
       }
 
       p.draw = () => {
