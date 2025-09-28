@@ -327,6 +327,10 @@ export function init(song, sprite, bglist) {
       btnPressStart.textColor = 'white';
       btnPressStart.textBorderColor = 'black';
       btnPressStart.textBorderWidth = 4;
+      btnPressStart.onClick = () => {
+         anim = charSelection[currentChar];
+         audio.inst = audioList[0];
+      };
 
       btnReturnMenu.textSize = 35;
       btnReturnMenu.textColor = 'white';
