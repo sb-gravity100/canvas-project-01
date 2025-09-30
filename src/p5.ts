@@ -117,7 +117,7 @@ export function init(song, sprite, bglist) {
                   );
                   sa.changeAnimation('idle');
                   sa.scale = 0.4;
-                  sa.position.set(innerWidth * 0.1, innerHeight * 0.5);
+                  sa.position.set(innerWidth * 0.2, innerHeight * 0.5);
                   sa.frameDelay = 8;
                   charSelection.push(sa);
                });
@@ -153,12 +153,12 @@ export function init(song, sprite, bglist) {
                selectArrows.up = new UIImage(
                   p,
                   p.createVector(up?.frame.width, up?.frame.height),
-                  p.createVector(innerWidth * 0.1, innerHeight * 0.1)
+                  p.createVector(innerWidth * 0.2, innerHeight * 0.1)
                );
                selectArrows.down = new UIImage(
                   p,
                   p.createVector(down?.frame.width, down?.frame.height),
-                  p.createVector(innerWidth * 0.1, innerHeight * 0.9)
+                  p.createVector(innerWidth * 0.2, innerHeight * 0.9)
                );
                selectArrows.left = new UIImage(
                   p,
