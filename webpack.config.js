@@ -13,9 +13,10 @@ var config = {
    mode: 'development',
    entry: './src/index.ts',
    output: {
-      path: path.resolve(__dirname, 'dist'),
+      path: path.resolve(__dirname, 'server/build'),
       filename: '[name].bundle.js',
    },
+
    devServer: {
       port: 3000,
       hot: true,
@@ -57,10 +58,16 @@ var config = {
             test: /\.s[ac]ss$/i,
             use: [stylesHandler, 'css-loader', 'sass-loader'],
          },
+         // {
+         //    test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
+         //    type: 'asset',
+         // },
          {
-            test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
-            type: 'asset',
-         },
+            test: /\.(png|webp|json|ogg|xml|ttf)$/,
+            exclude: [
+               path.resolve(__dirname, "/public/assets")
+            ]
+         }
       ],
    },
    resolve: {

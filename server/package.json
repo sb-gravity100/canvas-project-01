@@ -10,6 +10,7 @@
       "express-handlebars": "^5.3.4",
       "express-jwt": "^6.1.0",
       "morgan": "^1.10.0",
+      "open": "^10.2.0",
       "socket.io": "^4.2.0"
    },
    "devDependencies": {
@@ -25,7 +26,9 @@
       "typescript": "^5.8.3"
    },
    "scripts": {
-      "start": "nodemon ./src/index.ts"
+      "start": "nodemon ./src/index.ts",
+      "build": "tsc",
+      "serve": "node ./dist/index.js"
    },
    "nodemonConfig": {
       "env": {

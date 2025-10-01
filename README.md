@@ -1,15 +1,10 @@
-# 🚀 Welcome to your new awesome project!
+# Game Requirements
 
-This project has been created using **webpack-cli**, you can now run
+This game requires **Node.js** to be installed on your system.
 
-```
-npm run build
-```
+You can download Node.js from the official website: [https://nodejs.org](https://nodejs.org)
 
-or
+Once installed, you can run the game using:
 
-```
-yarn build
-```
-
-to bundle your application
+```bash
+node your-game-file.js
